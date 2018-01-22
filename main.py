@@ -1,6 +1,7 @@
 import sys
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QWidget, QApplication, QVBoxLayout
+from PyQt5.QtCore import Qt
+import Session
 
 
 class MainWindow(QWidget):
@@ -14,7 +15,11 @@ class MainWindow(QWidget):
 
     def initUi(self):
         """Ui Setup."""
-        pass
+        start = Session.Session(self)
+        layout = QVBoxLayout()
+        layout.addWidget(start)
+
+        self.setLayout(layout)
 
     def paintEvent(self, event):
         """Set window background color."""
