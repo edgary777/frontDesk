@@ -9,7 +9,7 @@ class Session(QWidget):
 
     def __init__(self, parent):
         """Init."""
-        super().__init(parent)
+        super().__init__(parent)
 
         self.initUi()
 
