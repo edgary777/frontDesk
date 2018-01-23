@@ -116,6 +116,14 @@ class SimpleBtn(QAbstractButton):
         layout.addWidget(label)
         self.setLayout(layout)
 
+    def setActionL(self, action):
+        """Set left mouse button acton."""
+        self.actionL = action
+
+    def setActionR(self, action):
+        """Set right mouse button acton."""
+        self.actionR = action
+
     def mousePressEvent(self, QMouseEvent):
         """Reimplement mouse events."""
         if QMouseEvent.button() == Qt.LeftButton:
