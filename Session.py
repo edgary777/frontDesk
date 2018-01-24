@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-import Buttons
+import SideBar
 
 
 class Session(QWidget):
@@ -17,5 +17,12 @@ class Session(QWidget):
         self.initUi()
 
     def initUi(self):
-        """Ui generator."""
-        pass
+        """Ui Setup."""
+        layout = QVBoxLayout()
+
+        btnList = ["Reservación", "Check-In", "Check-Out", "Configuración"]
+        sidebar = SideBar.SideBar(btnList, self)
+
+        layout.addWidget(sidebar)
+
+        self.setLayout(layout)
