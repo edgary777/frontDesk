@@ -158,3 +158,98 @@ class SimpleBtn(QAbstractButton):
     def minimumSizeHint(self):
         """Set the minimum size hint."""
         return QSize(self.widths, self.heights)
+
+
+class SideBarBtn(QAbstractButton):
+    """
+    Side Bar Button.
+
+    Color MUST be an rgb string array (eg. red = "255, 0, 0")
+
+    icon must be a png file with transparent background.
+    """
+
+    def __init__(self, color, label, icon, parent, actionL=None, actionR=None):
+        """Init."""
+        super().__init__(parent)
+
+        self.widths = 200
+        self.heights = 50
+
+        col = [int(color.strip()) for color in color.split(',')]
+        self.color = QColor(qRgb(col[0], col[1], col[2]))
+        self.label = label
+
+        self.icon = icon
+
+        self.actionL = actionL
+        self.actionR = actionR
+
+        self.initUi()
+
+    def initUi(self):
+        """Ui Setup."""
+        style = """ QLabel{
+            color: white;
+            font-weight: bold;
+            font-size: 15pt;
+        }"""
+
+        self.setStyleSheet(style)
+        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+
+        iconSize = 30
+
+        pixmap = QPixmap(self.icon)
+        pixmap = pixmap.scaled(iconSize, iconSize, Qt.KeepAspectRatio)
+        icon = QLabel()
+        icon.setPixmap(pixmap)
+        # icon.setFixedSize(iconSize + 10, iconSize + 10)
+        icon.setAlignment(Qt.AlignCenter)
+
+        label = QLabel(self.label)
+        label.setStyleSheet(style)
+        label.setAlignment(Qt.AlignCenter)
+
+        layout = QHBoxLayout()
+        layout.addWidget(icon)
+        layout.addWidget(label)
+        layout.addStretch()
+        self.setLayout(layout)
+
+    def setActionL(self, action):
+        """Set left mouse button acton."""
+        self.actionL = action
+
+    def setActionR(self, action):
+        """Set right mouse button acton."""
+        self.actionR = action
+
+    def mousePressEvent(self, QMouseEvent):
+        """Reimplement mouse events."""
+        if QMouseEvent.button() == Qt.LeftButton:
+            self.setDown(not self.isDown())
+            if self.actionL:
+                self.actionL()
+        elif QMouseEvent.button() == Qt.RightButton:
+            if self.actionR:
+                self.actionR()
+
+    def paintEvent(self, event):
+        """Paint Event."""
+        self.setAutoFillBackground(True)
+
+        # If the mouse is over the button make the color lighter
+        color = self.color.lighter(130) if self.underMouse() else self.color
+
+        # If the button is being pressed then make it darker
+        if self.isDown():
+            color = self.color.darker(130)
+
+        p = self.palette()
+        p.setColor(self.backgroundRole(), color)
+        self.setPalette(p)
+
+    def minimumSizeHint(self):
+        """Set the minimum size hint."""
+        return QSize(self.widths, self.heights)
