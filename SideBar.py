@@ -35,28 +35,38 @@ class SideBar(QWidget):
     def generateButtons(self, items):
         """Return layout with buttons."""
         x = 0
-        colors = self.color
+        colorRGB = self.color
+        print(colorRGB)
         layout = QVBoxLayout()
         layout.setSpacing(0)
-        for i in items:
-            color = """{}, {}, {}""". format(colors[0], colors[1], colors[2])
+
+        # Here we make the gradient style for the buttons.
+        # We start with a base color and make it lighter, but we must invert the order
+        # of the buttons first so the lighter color is on top.
+        btns = []
+        for i in reversed(items):
+            # self.color is a list of rgb values, we must make it a CSV string
+            color = ",".join(str(e) for e in colorRGB)
             label = str(i)
             icon = "Resources\c-close.png"
             setattr(self, "btn" + str(x), Buttons.SideBarBtn(color, label,
                                                              icon, self))
-            layout.addWidget(getattr(self, "btn" + str(x)))
+            btns.append(getattr(self, "btn" + str(x)))
+            # layout.addWidget(getattr(self, "btn" + str(x)))
             li = []
-            for item in colors:
-                li.append(round(item * .9))
-            colors = li
+            for item in colorRGB:
+                li.append(round(item * 1.1))
+            colorRGB = li
             x += 1
+        for btn in reversed(btns):
+            layout.addWidget(btn)
 
         layout.addStretch()
         return layout
 
     def rando(self):
         """Retur random integer."""
-        return random.randint(0, 255)
+        return random.randint(0, 187)
 
     def getWidth(self):
         """Return width."""
@@ -89,8 +99,9 @@ class SideBar(QWidget):
 
     def paintEvent(self, event):
         """Set window background color."""
-        shifted = self.shiftColor(self.color)
-        color = QColor(qRgb(shifted[0], shifted[1], shifted[2]))
+        # shifted = self.shiftColor(self.color)
+        color = self.color
+        color = QColor(qRgb(color[0], color[1], color[2]))
         self.setAutoFillBackground(True)
         p = self.palette()
         p.setColor(self.backgroundRole(), color)
