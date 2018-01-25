@@ -18,18 +18,19 @@ class SideBar(QWidget):
 
     def initUi(self):
         """Ui Setup."""
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+        self.setFixedWidth(200)
+        self.setMinimumWidth(120)
+        self.setMaximumWidth(250)
+        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         self.color = [self.rando(), self.rando(), self.rando()]
         buttons = self.generateButtons(self.items)
 
-        layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addLayout(buttons)
         layout.setSpacing(0)
         layout.addStretch()
-
-        self.setLayout(layout)
-
-        self.setFixedWidth(200)
 
     def generateButtons(self, items):
         """Return layout with buttons."""
@@ -56,6 +57,18 @@ class SideBar(QWidget):
     def rando(self):
         """Retur random integer."""
         return random.randint(0, 255)
+
+    def getWidth(self):
+        """Return width."""
+        self.layout().update()
+        self.layout().activate()
+        return self.width()
+
+    def getHeight(self):
+        """Return width."""
+        self.layout().update()
+        self.layout().activate()
+        return self.height()
 
     def getMiddle(self, items):
         """Return the item with the middle value."""

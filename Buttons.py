@@ -173,8 +173,9 @@ class SideBarBtn(QAbstractButton):
         """Init."""
         super().__init__(parent)
 
-        self.widths = 200
-        self.heights = 50
+        self.parent = parent
+        self.widths = self.parent.getWidth()
+        self.heights = self.widths / 4
 
         col = [int(color.strip()) for color in color.split(',')]
         self.color = QColor(qRgb(col[0], col[1], col[2]))
@@ -189,13 +190,7 @@ class SideBarBtn(QAbstractButton):
 
     def initUi(self):
         """Ui Setup."""
-        style = """ QLabel{
-            color: white;
-            font-weight: bold;
-            font-size: 15pt;
-        }"""
-
-        self.setStyleSheet(style)
+        self.setMinimumHeight(35)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
 
         iconSize = 30
@@ -207,13 +202,12 @@ class SideBarBtn(QAbstractButton):
         # icon.setFixedSize(iconSize + 10, iconSize + 10)
         icon.setAlignment(Qt.AlignCenter)
 
-        label = QLabel(self.label)
-        label.setStyleSheet(style)
-        label.setAlignment(Qt.AlignCenter)
+        self.qlabel = QLabel(self.label)
+        self.qlabel.setAlignment(Qt.AlignCenter)
 
         layout = QHBoxLayout()
         layout.addWidget(icon)
-        layout.addWidget(label)
+        layout.addWidget(self.qlabel)
         layout.addStretch()
         self.setLayout(layout)
 
@@ -249,6 +243,24 @@ class SideBarBtn(QAbstractButton):
         p = self.palette()
         p.setColor(self.backgroundRole(), color)
         self.setPalette(p)
+
+    def resizeEvent(self, event):
+        """Resize Event."""
+        # for the
+        self.setFixedWidth(self.parent.getWidth())
+        height = self.parent.getWidth() / 4
+        height = 35 if height < 35 else height
+        self.setFixedHeight(height)
+        self.setMinimumWidth(self.width() - 10)
+        self.setMaximumWidth(self.width() + 10)
+        size = self.width() * 0.07
+        size = "20" if size > 20 else str(size)
+        style = """QLabel{{
+            color: white;
+            font-weight: bold;
+            font-size: {}pt;
+        }}""".format(size)
+        self.qlabel.setStyleSheet(style)
 
     def minimumSizeHint(self):
         """Set the minimum size hint."""
