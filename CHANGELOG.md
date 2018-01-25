@@ -6,17 +6,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## Unreleased
 ### Added
-- New SideBar module and SideBar class. The sidebar is a qwidget object that
-    contains buttons, metadata and has a background to separate it visually
-    from where it's placed.
-- New SideBarBtn, it is a fixed size solid background button and can
-    contain an icon and a label.
 
 ### Removed
 
 ### Changed
 
 ### Fixed
+
+## V0.3.0
+### Added
+- New SideBar module and SideBar class. The sidebar is a qwidget object that
+    contains buttons, metadata and has a background to separate it visually
+    from where it's placed.
+- New SideBarBtn, it is a fixed size solid background button and can
+    contain an icon and a label.
 
 ## V0.2.0
 ### Added
