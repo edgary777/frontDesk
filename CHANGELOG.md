@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## Unreleased
 ### Added
+- New module Dashboard. The dashboard will show lists with relevant room/reservation data
+  (eg. today's check-in and check-out data).
+  These lists items can be interactive.
+- New modules Reservation and Room. Each containing its graphic and data representation.
+- New module People. Contains Guest, Company, and User graphic and data representations.
 
 ### Removed
 
