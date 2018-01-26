@@ -10,6 +10,15 @@ class RoomD(QWidget):
         """Init."""
         super().__init__(parent)
 
+        self.ID = None
+        self.number = None
+        self.type = None
+        self.beds = None
+        self.maxCapacity = None
+        self.extras = None
+        self.status = None
+        self.notes
+
 
 class RoomUi(QWidget):
     """Graphic representation of a room."""
