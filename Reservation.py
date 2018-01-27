@@ -10,24 +10,57 @@ class ReservationD(QWidget):
         """Init."""
         super().__init__(parent)
 
-        self.ID = None
         self.guest = guest
         self.rooms = rooms  # 1 reservation can comprise multiple rooms.
         self.user = user  # The user who made the reservation.
         self.data = data
-        self.adults = None
-        self.minors = None
-        self.guestID = None  # Passport, INE, driving license, etc...
-        self.dateIn = None
-        self.dateOut = None
-        self.rate = None
-        self.paid = None
-        self.status = None
-        self.company = None
-        self.extras = None
-        self.group = None
-        self.notes = None
-        self.otherGuests = None  # People other than the one who made the reservation.
+
+        # guestID == Passport, INE, driving license, etc...
+        # otherGuests == People other than the one who made the reservation.
+        self.items = ["ID", "adults", "minors", "guestID", "dateIn", "dateOut", "rate",
+                      "paid", "status", "company", "extras", "group", "notes",
+                      "otherGuests"]
+
+        for item in self.items:
+            setattr(self, item, None)
+
+    def getData(self):
+        """Return the reservation data as a dict.
+
+        Keys:
+        ID, guest, rooms, user, data, adults, minors,
+        guestID, dateIn, dateOut, rate, paid, status, company,
+        extras, group, notes, otherGuests
+        """
+        data = {}
+        for item in self.items:
+            data[item] = getattr(self, item)
+
+        data["guest"] = self.guest
+        data["rooms"] = self.rooms
+        data["user"] = self.user
+        return data
+
+    def setData(self):
+        """Parse the data passed and assign it to variables.
+
+        Data must be a dict with this keys:
+        ID, guest, rooms, user, data, adults, minors,
+        guestID, dateIn, dateOut, rate, paid, status, company,
+        extras, group, notes, otherGuests
+
+        Some can be left out if empty.
+        """
+        for key, value in self.data.items():
+            getattr(self, key) = value
+
+    def assignRoom(self):
+        """Assign a room to the reservation."""
+        # if there are rooms already occupied try and assign the room to the roomGroup
+        # with the most occupied rooms. Rooms are grouped because they can share AC or
+        # water heaters, so grouping them makes sense economically.
+        # if there are no rooms already occupied, randomly assign it.
+        pass
 
 
 class ReservationUi(QWidget):
