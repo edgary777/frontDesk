@@ -182,7 +182,6 @@ class DashItem(QWidget):
         # dashboard items only appear on the dashboard the day they are needed,
         # so room numbers will have been assigned already and therefore it makes sense :).
 
-        rsvData = self.reservation.getData()
         roomData = self.room.getData()
 
         self.RoNumber = roomData["number"]
@@ -195,6 +194,7 @@ class DashItem(QWidget):
         self.RoExtras = roomData["extras"]
         if Type == 0 or Type == 1:
             # Data for all reservations
+            rsvData = self.reservation.getData()
             self.ReName = self.reservation.getGuestName()
             self.ReDateIn = rsvData["dateIn"]
             self.ReDateOut = rsvData["dateOut"]
@@ -204,11 +204,11 @@ class DashItem(QWidget):
             self.ReGroup = rsvData["group"]
             self.ReExtras = rsvData["extras"]
             self.ReNotes = rsvData["notes"]
-        if Type == 1:
-            # Data for currently fulfilled reservations
-            self.ReTotal = self.reservation.getTotal()
-            self.RePaid = rsvData["paid"]
-            self.ReOwed = self.reservation.getOwed()
+            if Type == 1:
+                # Data for currently fulfilled reservations
+                self.ReTotal = self.reservation.getTotal()
+                self.RePaid = rsvData["paid"]
+                self.ReOwed = self.reservation.getOwed()
 
     def getType(self):
         """Return the type of item.
