@@ -52,7 +52,7 @@ class ReservationD(QWidget):
         Some can be left out if empty.
         """
         for key, value in self.data.items():
-            getattr(self, key) = value
+            setattr(self, key, value)
 
     def assignRoom(self):
         """Assign a room to the reservation."""
