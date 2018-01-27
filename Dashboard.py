@@ -111,7 +111,9 @@ class DashItem(QWidget):
                 raise AttributeError
         except AttributeError:
             print("DashItem")
-            print("You either forgot to pass a reservation or got the type wrong")
+            print(
+                "You either forgot to pass a reservation or got the type wrong"
+            )
             raise
 
         self.reservation = reservation
@@ -119,9 +121,9 @@ class DashItem(QWidget):
 
         self.items = [
             "RoNumber", "RoStatus", "RoType", "RoAvailableExtras", "RoNotes",
-            "ReName", "ReDateIn", "ReDateOut", "ReNights", "ReAdults",
-            "ReMinors", "ReGroup", "ReExtras", "ReNotes", "ReTotal", "RePaid",
-            "ReOwed"
+            "RoMaxCap", "RoBeds", "ReName", "ReDateIn", "ReDateOut",
+            "ReNights", "ReAdults", "ReMinors", "ReGroup", "ReExtras",
+            "ReNotes", "ReTotal", "RePaid", "ReOwed"
         ]
         for item in self.items:
             setattr(self, item, None)
@@ -130,32 +132,37 @@ class DashItem(QWidget):
 
     def init(self, Type):
         """Init item."""
-        # It make seem like CheckIn DashItem's shouldn't have an assigned number, but
+        # It may seem like CheckIn DashItem's shouldn't have an assigned number, but
         # room number is assigned the day the reservation is to be claimed, and Non-Status
         # dashboard items only appear on the dashboard the day they are needed,
         # so room numbers will have been assigned already and therefore it makes sense :).
-        self.RoNumber = self.room.getRoomNumber()
-        self.RoStatus = self.room.getStatus()
-        self.RoType = self.room.getType()
-        self.RoAvailableExtras = self.room.getExtras()
-        self.RoNotes = self.room.getNotes()
+
+        rsvData = self.reservation.getData()
+        roomData = self.room.getData()
+
+        self.RoNumber = roomData["number"]
+        self.RoStatus = roomData["status"]
+        self.RoType = roomData["type"]
+        self.RoAvailableExtras = roomData["extras"]
+        self.RoNotes = roomData["notes"]
+        self.RoMaxCap = roomData["maxCapacity"]
+        self.RoBeds = roomData["beds"]
         if Type == 0 or Type == 1:
             # Data for all reservations
-            self.ReName = self.reservation.getLastName(
-            ) + ", " + self.reservation.getName()
-            self.ReDateIn = self.reservation.getDateIn()
-            self.ReDateOut = self.reservation.getDateOut()
-            self.ReNights = (self.dateOut - self.dateIn) - 1
-            self.ReAdults = self.reservation.getAdults()
-            self.ReMinors = self.reservation.getMinors()
-            self.ReGroup = self.reservaton.getGroup()
-            self.ReExtras = self.reservation.getExtras()
-            self.ReNotes = self.reservation.getNotes()
+            self.ReName = self.reservation.getGuestName()
+            self.ReDateIn = rsvData["dateIn"]
+            self.ReDateOut = rsvData["dateOut"]
+            self.ReNights = self.reservation.getNights()
+            self.ReAdults = rsvData["adults"]
+            self.ReMinors = rsvData["minors"]
+            self.ReGroup = rsvData["group"]
+            self.ReExtras = rsvData["extras"]
+            self.ReNotes = rsvData["notes"]
         if Type == 1:
             # Data for currently fulfilled reservations
             self.ReTotal = self.reservation.getTotal()
-            self.RePaid = self.reservation.getPaid()
-            self.ReOwed = self.total - self.paid
+            self.RePaid = rsvData["paid"]
+            self.ReOwed = self.reservation.getOwed()
 
     def getType(self):
         """Return the type of item.

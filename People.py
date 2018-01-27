@@ -31,6 +31,10 @@ class GuestD(DataItem):
         for item in self.items:
             setattr(self, item, None)
 
+    def getName(self):
+        """Return formatted name."""
+        return self.lastName + ", " + self. name
+
 
 class GuestUi(QWidget):
     """Graphic representation of a guest."""

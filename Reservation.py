@@ -51,6 +51,26 @@ class ReservationD(DataItem):
         # if there are no rooms already occupied, randomly assign it.
         pass
 
+    def getGuestName(self):
+        """Return formatted name."""
+        return self.guest.getName()
+
+    def getNights(self):
+        """Return the number of nights the guest is staying."""
+        pass
+
+    def getTotal(self):
+        """Return the total amount to be paid by the guest."""
+        return self.getNights * self.rate
+
+    def getOwed(self):
+        """Return the amount owed by the guest."""
+        pass
+
+    def updatePaid(self):
+        """Update the amount paid by the guest."""
+        pass
+
 
 class ReservationUi(QWidget):
     """Graphic representation of a reservation."""
