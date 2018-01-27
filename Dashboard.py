@@ -12,6 +12,8 @@ class DashScroll(QWidget):
 
         self.initUi()
 
+        self.setScrollItem(DashList(self))
+
     def initUi(self):
         """Ui setup."""
         layout = QVBoxLayout()
