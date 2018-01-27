@@ -125,8 +125,6 @@ class DashItem(QWidget):
             "ReNights", "ReAdults", "ReMinors", "ReGroup", "ReExtras",
             "ReNotes", "ReTotal", "RePaid", "ReOwed"
         ]
-        for item in self.items:
-            setattr(self, item, None)
 
         self.init(Type)  # 0 == In, 1 == out, 2 == status
 
