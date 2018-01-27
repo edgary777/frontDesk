@@ -12,8 +12,10 @@ class RoomD(QWidget):
 
         self.data = data
 
-        self.items = ["ID", "number", "type", "beds", "maxCapacity", "extras",
-                      "status", "notes"]
+        self.items = [
+            "ID", "number", "type", "beds", "maxCapacity", "extras", "status",
+            "notes"
+        ]
 
         for item in self.items:
             setattr(self, item, None)

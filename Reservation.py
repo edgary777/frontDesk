@@ -17,9 +17,11 @@ class ReservationD(QWidget):
 
         # guestID == Passport, INE, driving license, etc...
         # otherGuests == People other than the one who made the reservation.
-        self.items = ["ID", "adults", "minors", "guestID", "dateIn", "dateOut", "rate",
-                      "paid", "status", "company", "extras", "group", "notes",
-                      "otherGuests"]
+        self.items = [
+            "ID", "adults", "minors", "guestID", "dateIn", "dateOut", "rate",
+            "paid", "status", "company", "extras", "group", "notes",
+            "otherGuests"
+        ]
 
         for item in self.items:
             setattr(self, item, None)

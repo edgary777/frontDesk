@@ -149,8 +149,9 @@ class SimpleBtn(QAbstractButton):
 
         # Create the path for the figure
         path = QPainterPath()
-        path.addRoundedRect(QRectF(0.0, 0.0, self.width(), self.height()),
-                            self.rounded, self.rounded)
+        path.addRoundedRect(
+            QRectF(0.0, 0.0, self.width(), self.height()), self.rounded,
+            self.rounded)
 
         # Fill the paths with color
         painter.fillPath(path, color)

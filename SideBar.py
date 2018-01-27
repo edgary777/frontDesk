@@ -49,8 +49,8 @@ class SideBar(QWidget):
             color = ",".join(str(e) for e in colorRGB)
             label = str(i)
             icon = "Resources\c-close.png"
-            setattr(self, "btn" + str(x), Buttons.SideBarBtn(color, label,
-                                                             icon, self))
+            setattr(self, "btn" + str(x),
+                    Buttons.SideBarBtn(color, label, icon, self))
             btns.append(getattr(self, "btn" + str(x)))
             # layout.addWidget(getattr(self, "btn" + str(x)))
             li = []
