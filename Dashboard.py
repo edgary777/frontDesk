@@ -43,11 +43,14 @@ class DashList(QWidget):
 
     def initUi(self):
         """Ui setup."""
-        pass
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
 
-    def addItem(self):
+    def addItem(self, Type, room, parent, reservation=None):
         """Add an item."""
-        pass
+        dItem = (Type, room, self, reservation)
+        self.items.append[dItem]
+        self.updateUi()
 
     def removeItem(self):
         """Remove an item."""
@@ -67,25 +70,38 @@ class DashList(QWidget):
 
     def cleanUi(self):
         """Remove all items from the layout."""
-        pass
+        for i in reversed(range(self.layout.count())):
+            if i > 0:
+                ob = self.layout.takeAt(i).widget()
+                ob.setParent(None)
+                ob.deleteLater()
 
     def fillUi(self):
         """Add all items in the items list to the layout."""
-        pass
+        for item in self.items:
+            uiItem = DashItemUi(item, self)
+            self.layout.addWidget(uiItem)
 
     def updateUi(self):
         """Update the Ui."""
-        pass
+        self.cleanUi()
+
+        self.fillUi()
 
 
 class DashItemUi(QWidget):
     """Dashboard item graphic representation."""
 
-    def __init__(self, parent, complex=False):
+    def __init__(self, dashItem, parent):
         """Init."""
         super().__init__(parent)
 
-        self.initUi()
+        self.dItem = dashItem.getData()
+
+        if dashItem.getType() != 2:
+            self.IOUi()
+        else:
+            self.statusUi()
 
     def IOUi(self):
         """Check-In and Check-Out Ui setup."""
