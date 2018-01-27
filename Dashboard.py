@@ -94,7 +94,36 @@ class DashItemUi(QWidget):
 
     def statusUi(self):
         """Room status Ui setup."""
-        # No de cuarto, fecha de entrada, fecha de salida, status
+        items = {
+            "number": (0, 0, 2, 1, "RoNumber"),
+            "status": (0, 1, 1, 1, "RoStatus"),
+            "type": (1, 1, 1, 1, "RoType"),
+            "beds": (0, 3, 1, 1, "RoBeds"),
+            "max": (0, 4, 1, 1, "RoMaxCap")
+        }
+
+        layout = QGridLayout()
+
+        for key, value in items.items():
+            setattr(self, key + "Label", QLabel(str(self.dItem[value[4]])))
+            layout.addWidget(
+                getattr(self, key + "Label"), value[0], value[1], value[2],
+                value[3])
+
+        if not self.dItem["RoNotes"] is None:
+            self.notesIcon = QLabel(icon)
+            layout.addWidget(self.notesIcon, 0, 2, 2, 1)
+        else:
+            self.notesIcon = QSpacerItem(20, 20)
+            layout.addWidget(self.notesIcon, 0, 2, 2, 1)
+
+        self.extras = self.extrasIcons(self.dItem["RoExtras"])
+        layout.addLayout(self.extras, 1, 3, 1, 2)
+
+        self.setLayout(layout)
+
+    def extrasIcons(self, extras):
+        """Return a layout with the icons of the extras passed."""
         pass
 
 
