@@ -6,18 +6,39 @@ from PyQt5.QtGui import *
 class RoomD(QWidget):
     """Data representation of a room."""
 
-    def __init__(self, parent):
+    def __init__(self, data, parent):
         """Init."""
         super().__init__(parent)
 
-        self.ID = None
-        self.number = None
-        self.type = None
-        self.beds = None
-        self.maxCapacity = None
-        self.extras = None
-        self.status = None
-        self.notes
+        self.data = data
+
+        self.items = ["ID", "number", "type", "beds", "maxCapacity", "extras",
+                      "status", "notes"]
+
+        for item in self.items:
+            setattr(self, item, None)
+
+    def setData(self):
+        """Parse the data and assign it to variables.
+
+        Data must be a dict with this keys:
+        ID, number, type beds, maxCapacity, extras, status, notes
+
+        notes is the only one that can be empty.
+        """
+        for key, value in self.data.items():
+            setattr(self, key, value)
+
+    def getData(self):
+        """Return the reservation data as a dict.
+
+        keys:
+        ID, number, type beds, maxCapacity, extras, status, notes
+        """
+        data = {}
+        for item in self.items:
+            data[item] = getattr(self, item)
+        return data
 
 
 class RoomUi(QWidget):
