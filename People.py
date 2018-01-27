@@ -1,31 +1,35 @@
+import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from DataItems import DataItem
 
 
-class GuestD(QWidget):
+class GuestD(DataItem):
     """Data representation of guest."""
 
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         """Init."""
         super().__init__(parent)
 
-        self.ID = None
-        self.name = None
-        self.lastName = None
-        self.guestID = None  # Passport, INE, driving license, etc...
-        self.age = None
-        self.phones = None  # [number, ext, name] Can have more than 1
-        self.emails = None  # Can have more than 1
-        self.addresses = None  # Can have more than 1
-        self.country = None
-        self.state = None
-        self.county = None
-        self.notes = None
+        # self.guestID is a pyisical ID and can be a passport, driving license etc.
+        # self.guestID must be formatted [idType, idNumber]
+        #
+        # self.phones must be formatted [number, ext, name]
+        # self.phones, self.emails and self.addresses can have more than 1 item
+        #
+        # self.company:
         # Company's hold invoice data, so if the guest needs an invoice, even if he is a
         # "Persona Fisica", a company must be registered.
         # they would register to their name instead of a company name.
-        self.company = None
+
+        self.items = [
+            "ID", "name", "lastName", "guestID", "age", "phones", "emails",
+            "addresses", "country", "state", "county", "notes"
+        ]
+
+        for item in self.items:
+            setattr(self, item, None)
 
 
 class GuestUi(QWidget):
@@ -36,25 +40,29 @@ class GuestUi(QWidget):
         super().__init__(parent)
 
 
-class CompanyD(QWidget):
+class CompanyD(DataItem):
     """Data representation of company."""
 
     def __init__(self, parent):
         """Init."""
         super().__init__(parent)
 
-        self.ID = None
-        self.businessName = None  # eg. Syrup Design Studio
-        self.companyName = None  # eg. Duraznos en almibar SA de CV, Edgar Solis Vizcarra
-        self.addresses = None  # Can have more than 1
-        self.phones = None  # [number, ext, name] Can have more than 1
-        self.emails = None  # Can have more than 1
-        self.RFC = None
-        self.contact = None  # name of contact person
-        self.country = None
-        self.state = None
-        self.county = None
-        self.notes = None
+        # businessName eg. Syrup Design Studio
+        #
+        # companyName eg. Duraznos en almibar SA de CV, Edgar Solis Vizcarra
+        #
+        # self.phones must be formatted [number, ext, name]
+        # self.phones, self.emails and self.addresses can have more than 1 item
+        #
+        # contact == name of contact person
+
+        self.items = [
+            "ID", "businessName", "companyName", "addresses", "phones",
+            "emails", "RFC", "contact", "country", "state", "county", "notes"
+        ]
+
+        for item in self.items:
+            setattr(self, item, None)
 
 
 class CompanyUi(QWidget):
@@ -65,18 +73,19 @@ class CompanyUi(QWidget):
         super().__init__(parent)
 
 
-class UserD(QWidget):
+class UserD(DataItem):
     """Data representation of a user."""
 
     def __init__(self, parent):
         """Init."""
         super().__init__(parent)
 
-        self.ID = None
-        self.type = None  # ADMIN=0, USER=1
-        self.name = None
-        self.lastName = None
-        self.notes = None
+        # self.type [ADMIN=0, USER=1]
+
+        self.items = ["ID", "type", "name", "lastName", "notes"]
+
+        for item in self.items:
+            setattr(self, item, None)
 
 
 class UserUi(QWidget):

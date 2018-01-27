@@ -1,19 +1,19 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from DataItems import DataItem
 
 
-class ReservationD(QWidget):
+class ReservationD(DataItem):
     """Data representation of a reservation."""
 
-    def __init__(self, guest, rooms, user, data, parent):
+    def __init__(self, guest, rooms, user, parent):
         """Init."""
         super().__init__(parent)
 
         self.guest = guest
         self.rooms = rooms  # 1 reservation can comprise multiple rooms.
         self.user = user  # The user who made the reservation.
-        self.data = data
 
         # guestID == Passport, INE, driving license, etc...
         # otherGuests == People other than the one who made the reservation.
@@ -42,19 +42,6 @@ class ReservationD(QWidget):
         data["rooms"] = self.rooms
         data["user"] = self.user
         return data
-
-    def setData(self):
-        """Parse the data passed and assign it to variables.
-
-        Data must be a dict with this keys:
-        ID, guest, rooms, user, data, adults, minors,
-        guestID, dateIn, dateOut, rate, paid, status, company,
-        extras, group, notes, otherGuests
-
-        Some can be left out if empty.
-        """
-        for key, value in self.data.items():
-            setattr(self, key, value)
 
     def assignRoom(self):
         """Assign a room to the reservation."""
