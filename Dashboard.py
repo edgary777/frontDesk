@@ -121,9 +121,9 @@ class DashItem(QWidget):
 
         self.items = [
             "RoNumber", "RoStatus", "RoType", "RoAvailableExtras", "RoNotes",
-            "RoMaxCap", "RoBeds", "ReName", "ReDateIn", "ReDateOut",
-            "ReNights", "ReAdults", "ReMinors", "ReGroup", "ReExtras",
-            "ReNotes", "ReTotal", "RePaid", "ReOwed"
+            "RoExtras", "RoMaxCap", "RoBeds", "ReName", "ReDateIn",
+            "ReDateOut", "ReNights", "ReAdults", "ReMinors", "ReGroup",
+            "ReExtras", "ReNotes", "ReTotal", "RePaid", "ReOwed"
         ]
 
         self.init(Type)  # 0 == In, 1 == out, 2 == status
@@ -145,6 +145,7 @@ class DashItem(QWidget):
         self.RoNotes = roomData["notes"]
         self.RoMaxCap = roomData["maxCapacity"]
         self.RoBeds = roomData["beds"]
+        self.RoExtras = roomData["extras"]
         if Type == 0 or Type == 1:
             # Data for all reservations
             self.ReName = self.reservation.getGuestName()
