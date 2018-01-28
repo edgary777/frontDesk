@@ -135,7 +135,9 @@ class DashItemUi(QWidget):
                 value[3])
 
         if not self.dItem["RoNotes"] is None:
-            self.notesIcon = QLabel(icon)
+            pixmap = QPixmap("Resources/note.png").scaled(40, 40, Qt.KeepAspectRatio)
+            self.notesIcon = QLabel()
+            self.notesIcon.setPixmap(pixmap)
             layout.addWidget(self.notesIcon, 0, 2, 2, 1)
         else:
             self.notesIcon = QSpacerItem(20, 20)
@@ -144,11 +146,29 @@ class DashItemUi(QWidget):
         self.extras = self.extrasIcons(self.dItem["RoExtras"])
         layout.addLayout(self.extras, 1, 3, 1, 2)
 
+        layout.setColumnStretch(0, 1)
+        layout.setColumnStretch(1, 5)
+        layout.setColumnStretch(2, 1)
+        layout.setColumnStretch(3, 2)
+
         self.setLayout(layout)
 
     def extrasIcons(self, extras):
         """Return a layout with the icons of the extras passed."""
-        pass
+        layout = QHBoxLayout()
+        for i in range(5):
+            pixmap = QPixmap("Resources/ac.png").scaled(20, 20, Qt.KeepAspectRatio)
+            icon = QLabel()
+            icon.setPixmap(pixmap)
+            layout.addWidget(icon)
+        return layout
+
+    def paintEvent(self, event):
+        """Set window background color."""
+        self.setAutoFillBackground(True)
+        p = self.palette()
+        p.setColor(self.backgroundRole(), Qt.gray)
+        self.setPalette(p)
 
 
 class DashItem(QWidget):
