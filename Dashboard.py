@@ -140,7 +140,9 @@ class DashItemUi(QWidget):
             self.notesIcon.setPixmap(pixmap)
             layout.addWidget(self.notesIcon, 0, 2, 2, 1)
         else:
-            self.notesIcon = QSpacerItem(20, 20)
+            pixmap = QPixmap().scaled(40, 40, Qt.KeepAspectRatio)
+            self.notesIcon = QLabel()
+            self.notesIcon.setPixmap(pixmap)
             layout.addWidget(self.notesIcon, 0, 2, 2, 1)
 
         self.extras = self.extrasIcons(self.dItem["RoExtras"])
