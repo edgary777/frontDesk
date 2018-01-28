@@ -33,6 +33,10 @@ class DashScroll(QWidget):
         """Set the item for the scroll area."""
         self.area.setWidget(item)
 
+    def getList(self):
+        """Return it's DashList."""
+        return self.list
+
 
 class DashList(QWidget):
     """Dashboard items list."""
