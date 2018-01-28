@@ -12,7 +12,8 @@ class DashScroll(QWidget):
 
         self.initUi()
 
-        self.setScrollItem(DashList(self))
+        self.list = DashList(self)
+        self.setScrollItem(self.list)
 
     def initUi(self):
         """Ui setup."""
