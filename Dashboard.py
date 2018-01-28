@@ -227,7 +227,10 @@ class DashItem(QWidget):
         """
         data = {}
         for item in self.items:
-            if not getattr(self, item) is None:
-                data[item] = getattr(self, item)
+            try:
+                if not getattr(self, item) is None:
+                    data[item] = getattr(self, item)
+            except AttributeError:
+                pass
         data["type"] = self.type
         return data
