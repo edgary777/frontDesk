@@ -50,10 +50,10 @@ class DashList(QWidget):
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
-    def addItem(self, Type, room, parent, reservation=None):
+    def addItems(self,items):
         """Add an item."""
-        dItem = (Type, room, self, reservation)
-        self.items.append[dItem]
+        for item in items:
+            self.items.append(item)
         self.updateUi()
 
     def removeItem(self):
