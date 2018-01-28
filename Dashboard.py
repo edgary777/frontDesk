@@ -21,6 +21,7 @@ class DashScroll(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         self.area = QScrollArea()
+        self.area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         # This must be done so it can update dynamically
         self.area.setWidgetResizable(True)
