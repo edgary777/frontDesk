@@ -33,7 +33,7 @@ class GuestD(DataItem):
 
     def getName(self):
         """Return formatted name."""
-        return self.lastName + ", " + self. name
+        return str(self.lastName) + ", " + str(self.name)
 
 
 class GuestUi(QWidget):
