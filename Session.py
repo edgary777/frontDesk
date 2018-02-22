@@ -5,6 +5,12 @@ import SideBar
 from Dashboard import DashScroll, DashItem
 import random
 import Room
+import Reservation
+import People
+import Manager
+import Db
+import datetime
+
 
 class Session(QWidget):
     """Holds all data and can be restarted to show changes or change user."""
@@ -54,35 +60,29 @@ class Session(QWidget):
 
     def updateCheckIn(self):
         """Update the checkIn scroller."""
-        pass
+        manager = Manager.CheckInManager(self)
+        checkIns = manager.getToday()
+        items = []
+        for cin in checkIns:
+            items.append(DashItem(1, self, reservation=cin))
+        self.checkIn.getList().addItems(items)
 
     def updateCheckOut(self):
         """Update the checkOut scroller."""
+        # manager = Manager.CheckOutManager(self)
+        # checkOuts = manager.getToday()
+        # items = []
+        # for cout in checkOuts:
+        #     items.append(DashItem(1, self, reservation=cout))
+        # self.checkOut.getList().addItems(items)
         pass
 
     def updateStatus(self):
         """Update the roomStatus scroller."""
-        rooms = self.roomDummyCreator()
+        manager = Manager.RoomManager(self)
+        # today = datetime.datetime.today().date()
+        rooms = manager.getRooms()
         items = []
         for room in rooms:
-            items.append(DashItem(2, room, self))
+            items.append(DashItem(2, self, room=room))
         self.roomStatus.getList().addItems(items)
-
-    def roomDummyCreator(self):
-        """Create dummy rooms for testing."""
-        rooms = 10
-        roomList = []
-        items = [
-            "ID", "number", "type", "beds", "maxCapacity", "extras", "status",
-            "notes"
-        ]
-        for room in range(rooms):
-            data = {}
-            for item in items:
-                data[item] = round(random.random() * 10000)
-            roomObj = Room.RoomD(self)
-            print(roomObj)
-            roomObj.setData(data)
-            roomList.append(roomObj)
-
-        return roomList
