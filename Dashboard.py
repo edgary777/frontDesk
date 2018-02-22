@@ -54,7 +54,7 @@ class DashList(QWidget):
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
-    def addItems(self,items):
+    def addItems(self, items):
         """Add an item."""
         for item in items:
             self.items.append(item)
@@ -104,6 +104,9 @@ class DashItemUi(QWidget):
         """Init."""
         super().__init__(parent)
 
+        # dash Item
+        self.dashItem = dashItem
+        # dash Item data
         self.dItem = dashItem.getData()
 
         if dashItem.getType() != 2:
@@ -113,8 +116,10 @@ class DashItemUi(QWidget):
 
     def IOUi(self):
         """Check-In and Check-Out Ui setup."""
-        # No de cuarto, nombre, No de noches, fecha de entrada, fecha de salida
-        pass
+        if self.dashItem.getMulti() is False:
+            self.singleRoomUi()
+        else:
+            self.multiRoomUi()
 
     def statusUi(self):
         """Room status Ui setup."""
@@ -134,16 +139,8 @@ class DashItemUi(QWidget):
                 getattr(self, key + "Label"), value[0], value[1], value[2],
                 value[3])
 
-        if not self.dItem["RoNotes"] is None:
-            pixmap = QPixmap("Resources/note.png").scaled(40, 40, Qt.KeepAspectRatio)
-            self.notesIcon = QLabel()
-            self.notesIcon.setPixmap(pixmap)
-            layout.addWidget(self.notesIcon, 0, 2, 2, 1)
-        else:
-            pixmap = QPixmap().scaled(40, 40, Qt.KeepAspectRatio)
-            self.notesIcon = QLabel()
-            self.notesIcon.setPixmap(pixmap)
-            layout.addWidget(self.notesIcon, 0, 2, 2, 1)
+        # Note Icon setup
+        self.noteIcon(self.dashItem.gotNote("ro"), 2, layout)
 
         self.extras = self.extrasIcons(self.dItem["RoExtras"])
         layout.addLayout(self.extras, 1, 3, 1, 2)
@@ -155,11 +152,128 @@ class DashItemUi(QWidget):
 
         self.setLayout(layout)
 
+    def singleRoomItems(self):
+        """Return items for single room reservation."""
+        items = None
+        if self.dashItem.getType() == 0:
+            items = {
+                "number": (0, 0, 2, 1, "RoNumber"),
+                "name": (0, 1, 1, 1, "ReName"),
+                "status": (0, 2, 2, 1, "RoStatus"),
+                "group": (0, 4, 1, 1, "ReGroup"),
+                "extras": (0, 5, 1, 2, "ReExtras"),
+                "nights": (1, 4, 1, 1, "ReNights")
+            }
+        else:
+            # to be honest, I don't know why there are to layout setups.
+            items = {
+                "number": (0, 0, 2, 1, "RoNumber"),
+                "name": (0, 1, 1, 1, "ReName"),
+                "group": (1, 1, 1, 1, "ReGroup"),
+                "status": (0, 2, 2, 1, "RoStatus"),
+                "total": (0, 4, 2, 1, "ReTotal"),
+                "owed": (0, 5, 2, 1, "ReOwed")
+            }
+        return items
+
+    def singleRoomUi(self):
+        """Return layout for single room reservations."""
+        layout = QGridLayout()
+
+        items = self.singleRoomItems()
+
+        # Labels from items
+        for key, value in items.items():
+            setattr(self, key + "Label", QLabel(str(self.dItem[value[4]])))
+            layout.addWidget(
+                getattr(self, key + "Label"), value[0], value[1], value[2],
+                value[3])
+
+        # Note Icon setup
+        self.noteIcon(self.dashItem.gotNote("re"), 3, layout)
+
+        # Guest Icons setup
+        if self.dashItem.getType() == 0:
+            guestsIcons = self.guestsIcon(20, self.dItem["ReAdults"],
+                                          self.dItem["ReMinors"])
+            layout.addLayout(guestsIcons, 1, 1, 1, 1)
+
+        # Layout setup
+        self.setLayout(layout)
+
+    def multiRoomUi(self):
+        """Multi room Ui setup."""
+        layout = QGridLayout()
+        items = {
+            "name": (0, 1, 1, 1, "ReName"),
+            "group": (1, 1, 1, 1, "ReGroup")
+        }
+
+        # Labels from items
+        for key, value in items.items():
+            setattr(self, key + "Label", QLabel(str(self.dItem[value[4]])))
+            layout.addWidget(
+                getattr(self, key + "Label"), value[0], value[1], value[2],
+                value[3])
+
+        # Multi-Room room number
+        rooms = self.dashItem.getMulti()
+        roomsLabel = QLabel("M" + str(rooms))
+
+        layout.addWidget(roomsLabel, 0, 0, 2, 1)
+
+        # Note Icon setup
+        self.noteIcon(self.dashItem.gotNote("re"), 1, layout)
+
+        # Guest Icons setup
+        if self.dashItem.getType() == 0:
+            guestsIcons = self.guestsIcon(40, self.dItem["ReAdults"],
+                                          self.dItem["ReMinors"])
+            layout.addLayout(guestsIcons, 0, 3, 2, 1)
+
+        self.setLayout(layout)
+
+    def guestsIcon(self, size, adults, minors):
+        """Return a layout with the adults and minors icon and number."""
+        layout = QHBoxLayout()
+
+        pixmap = QPixmap("Resources/ac.png").scaled(size, size,
+                                                    Qt.KeepAspectRatio)
+        adultIcon = QLabel()
+        adultIcon.setPixmap(pixmap)
+        layout.addWidget(adultIcon)
+        adultLabel = QLabel(str(adults))
+        layout.addWidget(adultLabel)
+
+        pixmap = QPixmap("Resources/ac.png").scaled(size, size,
+                                                    Qt.KeepAspectRatio)
+        minorIcon = QLabel()
+        minorIcon.setPixmap(pixmap)
+        layout.addWidget(minorIcon)
+        minorLabel = QLabel(str(minors))
+        layout.addWidget(minorLabel)
+
+        return layout
+
+    def noteIcon(self, status, place, layout):
+        """Return notes icon if status is True."""
+        if status is True:
+            pixmap = QPixmap("Resources/note.png").scaled(
+                40, 40, Qt.KeepAspectRatio)
+            notesIcon = QLabel()
+            notesIcon.setPixmap(pixmap)
+        else:
+            pixmap = QPixmap().scaled(40, 40, Qt.KeepAspectRatio)
+            notesIcon = QLabel()
+            notesIcon.setPixmap(pixmap)
+        layout.addWidget(notesIcon, 0, place, 2, 1)
+
     def extrasIcons(self, extras):
         """Return a layout with the icons of the extras passed."""
         layout = QHBoxLayout()
         for i in range(5):
-            pixmap = QPixmap("Resources/ac.png").scaled(20, 20, Qt.KeepAspectRatio)
+            pixmap = QPixmap("Resources/ac.png").scaled(
+                20, 20, Qt.KeepAspectRatio)
             icon = QLabel()
             icon.setPixmap(pixmap)
             layout.addWidget(icon)
@@ -169,21 +283,22 @@ class DashItemUi(QWidget):
         """Set window background color."""
         self.setAutoFillBackground(True)
         p = self.palette()
-        p.setColor(self.backgroundRole(), Qt.gray)
+        p.setColor(self.backgroundRole(), Qt.green)
         self.setPalette(p)
 
 
 class DashItem(QWidget):
     """Dashboard item data representation."""
 
-    def __init__(self, Type, room, parent, reservation=None):
+    def __init__(self, Type, parent, room=None, reservation=None):
         """Init."""
         super().__init__(parent)
+        self.parent = parent
 
         self.type = Type
         try:
             if Type != 2 and reservation is None:
-                raise AttributeError
+                pass
         except AttributeError:
             print("DashItem")
             print(
@@ -194,6 +309,9 @@ class DashItem(QWidget):
         self.reservation = reservation
         self.room = room
 
+        if self.room is None and self.reservation:
+            self.room = self.reservation.getRoomForDashboard(self.parent)
+
         self.items = [
             "RoNumber", "RoStatus", "RoType", "RoAvailableExtras", "RoNotes",
             "RoExtras", "RoMaxCap", "RoBeds", "ReName", "ReDateIn",
@@ -201,25 +319,38 @@ class DashItem(QWidget):
             "ReExtras", "ReNotes", "ReTotal", "RePaid", "ReOwed"
         ]
 
-        self.init(Type)  # 0 == In, 1 == out, 2 == status
+        self.setup(Type)  # 0 == In, 1 == out, 2 == status
 
-    def init(self, Type):
+    def setup(self, Type):
         """Init item."""
         # It may seem like CheckIn DashItem's shouldn't have an assigned number, but
         # room number is assigned the day the reservation is to be claimed, and Non-Status
         # dashboard items only appear on the dashboard the day they are needed,
-        # so room numbers will have been assigned already and therefore it makes sense :).
+        # so room numbers will have been assigned already and therefore it makes sense :D.
 
-        roomData = self.room.getData()
+        self.multi = None
 
-        self.RoNumber = roomData["number"]
-        self.RoStatus = roomData["status"]
-        self.RoType = roomData["type"]
-        self.RoAvailableExtras = roomData["extras"]
-        self.RoNotes = roomData["notes"]
-        self.RoMaxCap = roomData["maxCapacity"]
-        self.RoBeds = roomData["beds"]
-        self.RoExtras = roomData["extras"]
+        if self.reservation is not None:
+            if self.reservation.getMultiRoom() is True:
+                self.multi = True
+            else:
+                self.multi = False
+        else:
+            self.multi = False
+
+        if self.multi is False:
+            roomData = self.room.getData()
+            self.RoNumber = roomData["roomNo"]
+            self.RoStatus = roomData["status"]
+            self.RoType = roomData["roomType"]
+            self.RoAvailableExtras = roomData["extras"]
+            self.RoNotes = roomData["notes"]
+            self.RoMaxCap = roomData["maxCapacity"]
+            self.RoBeds = roomData["beds"]
+            self.RoExtras = roomData["extras"]
+        else:
+            self.RoNumber = "M"
+
         if Type == 0 or Type == 1:
             # Data for all reservations
             rsvData = self.reservation.getData()
@@ -229,8 +360,8 @@ class DashItem(QWidget):
             self.ReNights = self.reservation.getNights()
             self.ReAdults = rsvData["adults"]
             self.ReMinors = rsvData["minors"]
-            self.ReGroup = rsvData["group"]
-            self.ReExtras = rsvData["extras"]
+            self.ReGroup = rsvData["rsvgroup"] if rsvData["rsvgroup"] else ""
+            self.ReExtras = self.reservation.getExtras()
             self.ReNotes = rsvData["notes"]
             if Type == 1:
                 # Data for currently fulfilled reservations
@@ -245,20 +376,39 @@ class DashItem(QWidget):
         """
         return self.type
 
-    def getData(self):
-        """Return the item data as a dict.
+    def gotNote(self, what):
+        """Return True if there are notes, false if there arent.
 
-        keys:
-        type, roomNo, status, roomType, availableExtras, roomNotes,
-        name, dateIn, dateOut, nights, adults, minors, group,
-        requestedExtras, notes, total, paid, owed
+        what can be 'ro'(room) or 're'(reservation)
         """
+        if what == "ro":
+            if self.room.gotNote():
+                return True
+            else:
+                return False
+        if what == "re":
+            if self.reservation.gotNote():
+                return True
+            else:
+                return False
+
+    def getMulti(self):
+        """Return number of rooms if multi room, return False if single room."""
+        rooms = self.reservation.getMultiRoom()
+        if rooms is None:
+            return False
+        return rooms
+
+    def getData(self):
+        """Return the item data as a dict."""
         data = {}
         for item in self.items:
             try:
                 if not getattr(self, item) is None:
                     data[item] = getattr(self, item)
             except AttributeError:
+                # some items will be none an raise an error.
+                # it is not an error so just move on.
                 pass
         data["type"] = self.type
         return data
