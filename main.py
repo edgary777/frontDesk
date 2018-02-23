@@ -2,16 +2,19 @@ import sys
 from PyQt5.QtWidgets import QWidget, QApplication, QVBoxLayout
 from PyQt5.QtCore import Qt
 import Session
+import Db
+import atexit
 
 
 class MainWindow(QWidget):
     """Main window widget."""
 
-    def __init__(self):
+    def __init__(self, cursor):
         """Init."""
         super().__init__()
 
         self.session = None
+        self.cursor = cursor
 
         self.initUi()
 
@@ -29,7 +32,7 @@ class MainWindow(QWidget):
         if not user:
             # Prompt for user login data and verify credentials in db
             user = [0, "Edgar", 0]
-        return Session.Session(user, self)
+        return Session.Session(user, self, self.cursor)
 
     def restart(self):
         """Restart the session."""
@@ -48,7 +51,14 @@ class MainWindow(QWidget):
         self.setPalette(p)
 
 
+db = Db.Db()
+startConnection = db.startConnection()
+connection = startConnection[0]
+cursor = startConnection[1]
+
+atexit.register(db.endConnection, connection)
+
 app = QApplication(sys.argv)
-window = MainWindow()
+window = MainWindow(cursor)
 window.showMaximized()
 sys.exit(app.exec_())

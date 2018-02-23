@@ -6,9 +6,10 @@ import Db
 class RoomManager(object):
     """Rooms manager."""
 
-    def __init__(self, parent):
+    def __init__(self, parent, cursor):
         """Init."""
         self.db = Db.Db()
+        self.cursor = cursor
         self.parent = parent
 
     def updateRoom(self, room):
@@ -25,21 +26,16 @@ class RoomManager(object):
 
     def getRooms(self):
         """Return room data objects for scroller."""
-        startConnection = self.db.startConnection()
-        connection = startConnection[0]
-        cursor = startConnection[1]
-
-        roomsD = self.db.getRooms(cursor)
+        roomsD = self.db.getRooms(self.cursor)
         rooms = []
         for room in roomsD:
-            rooms.append(Room.RoomD(room, cursor, self.parent))
+            rooms.append(Room.RoomD(room, self.parent, self.cursor))
 
-        self.db.endConnection(connection)
         return rooms
 
     def getRoom(self, ID):
         """Return a room data object from it's ID."""
-        return Room.RoomD(ID, self.parent)
+        return Room.RoomD(ID, self.parent, self.cursor)
 
     def roomsForDay(self, date, Type, amount):
         """Return data objects of free rooms on the passed date."""
@@ -56,9 +52,10 @@ class RoomManager(object):
 class ReservationManager(object):
     """Reservation manager."""
 
-    def __init__(self, parent):
+    def __init__(self, parent, cursor):
         """Init."""
         self.db = Db.Db()
+        self.cursor = cursor
         self.parent = parent
 
     def makeReservation(self):
@@ -83,62 +80,49 @@ class ReservationManager(object):
 
     def getFinishedRsvs(self):
         """Return list of ReservationD Objects of finished reservations."""
-        startConnection = self.db.startConnection()
-        connection = startConnection[0]
-        cursor = startConnection[1]
-
-        rsvIDs = self.db.selectFinishedRsvs(cursor)
+        rsvIDs = self.db.selectFinishedRsvs(self.cursor)
         rsvs = []
 
         for rsv in rsvIDs:
-            rsvs.append(Reservation.ReservationD(rsv[0], cursor, self.parent))
+            rsvs.append(
+                Reservation.ReservationD(rsv[0], self.parent, self.cursor))
 
         for rsv in rsvs:
-            rsv.assignRooms(cursor)
-
-        self.db.endConnection(connection)
+            rsv.assignRooms(self.cursor)
 
     def getActiveRsvs(self):
         """Return list of ReservationD Objects of finished reservations."""
-        startConnection = self.db.startConnection()
-        connection = startConnection[0]
-        cursor = startConnection[1]
-
-        rsvIDs = self.db.selectActiveRsvs(cursor)
+        rsvIDs = self.db.selectActiveRsvs(self.cursor)
         rsvs = []
 
         for rsv in rsvIDs:
-            rsvs.append(Reservation.ReservationD(rsv[0], cursor, self.parent))
+            rsvs.append(
+                Reservation.ReservationD(rsv[0], self.parent, self.cursor))
 
         for rsv in rsvs:
-            rsv.assignRooms(cursor)
-
-        self.db.endConnection(connection)
+            rsv.assignRooms(self.cursor)
 
 
 class CheckInManager(object):
     """Check-Ins manager."""
 
-    def __init__(self, parent):
+    def __init__(self, parent, cursor):
         """Init."""
         self.db = Db.Db()
+        self.cursor = cursor
         self.parent = parent
 
     def getToday(self):
         """Return data objects of the reservations that will Check-In today."""
-        startConnection = self.db.startConnection()
-        connection = startConnection[0]
-        cursor = startConnection[1]
-
-        rsvD = self.db.getTodayCheckIns(cursor)
+        rsvD = self.db.getTodayCheckIns(self.cursor)
         reservations = []
         for rsvID in rsvD:
-            reservations.append(Reservation.ReservationD(rsvID[0], cursor, self.parent))
+            reservations.append(
+                Reservation.ReservationD(rsvID[0], self.parent, self.cursor))
 
         for rsv in reservations:
-            rsv.assignRooms(cursor)
+            rsv.assignRooms(self.cursor)
 
-        self.db.endConnection(connection)
         return reservations
 
     def updateRoom(self, room):
@@ -157,23 +141,20 @@ class CheckInManager(object):
 class CheckOutManager(object):
     """CheckOuts manager."""
 
-    def __init__(self, parent):
+    def __init__(self, parent, cursor):
         """Init."""
         self.db = Db.Db()
+        self.cursor = cursor
         self.parent = parent
 
     def getToday(self):
         """Return data objects of the reservations that will Check-Out today."""
-        startConnection = self.db.startConnection()
-        connection = startConnection[0]
-        cursor = startConnection[1]
-
-        rsvD = self.db.getTodayCheckOuts(cursor)
+        rsvD = self.db.getTodayCheckOuts(self.cursor)
         reservations = []
         for rsvID in rsvD:
-            reservations.append(Reservation.ReservationD(rsvID[0], cursor, self.parent))
+            reservations.append(
+                Reservation.ReservationD(rsvID[0], self.parent, self.cursor))
 
-        self.db.endConnection(connection)
         return reservations
 
     def updateRoom(self, room):

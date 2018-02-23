@@ -9,12 +9,13 @@ import Manager
 class Session(QWidget):
     """Holds all data and can be restarted to show changes or change user."""
 
-    def __init__(self, user, parent):
+    def __init__(self, user, parent, cursor):
         """Init."""
         super().__init__(parent)
 
         # user = [ID, NAME, TYPE[ADMIN=0, USER=1]]
         self.user = user
+        self.cursor = cursor
 
         self.initUi()
 
@@ -54,7 +55,7 @@ class Session(QWidget):
 
     def updateCheckIn(self):
         """Update the checkIn scroller."""
-        manager = Manager.CheckInManager(self)
+        manager = Manager.CheckInManager(self, self.cursor)
         checkIns = manager.getToday()
         items = []
         for cin in checkIns:
@@ -63,10 +64,10 @@ class Session(QWidget):
 
     def updateCheckOut(self):
         """Update the checkOut scroller."""
-        rsvManager = Manager.ReservationManager(self)
+        rsvManager = Manager.ReservationManager(self, self.cursor)
         rsvManager.getActiveRsvs()
         rsvManager.getFinishedRsvs()
-        manager = Manager.CheckOutManager(self)
+        manager = Manager.CheckOutManager(self, self.cursor)
         checkOuts = manager.getToday()
         items = []
         for cout in checkOuts:
@@ -75,7 +76,7 @@ class Session(QWidget):
 
     def updateStatus(self):
         """Update the roomStatus scroller."""
-        manager = Manager.RoomManager(self)
+        manager = Manager.RoomManager(self, self.cursor)
         # today = datetime.datetime.today().date()
         rooms = manager.getRooms()
         items = []

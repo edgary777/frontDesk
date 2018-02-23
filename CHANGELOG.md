@@ -13,6 +13,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Fixed
 
+## V0.5.0
+### Changed
+- Simplified the connections to the database. Now the same connection is used throghout
+    the lifetime of the program.
+
 ## V0.4.0
 ### Added
 - New module Dashboard. The dashboard will show lists with relevant room/reservation data

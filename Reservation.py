@@ -10,11 +10,12 @@ import datetime
 class ReservationD(DataItem):
     """Data representation of a reservation."""
 
-    def __init__(self, rsvID, cursor, parent):
+    def __init__(self, rsvID, parent, cursor):
         """Init."""
         super().__init__(parent)
         self.parent = parent
         self.cursor = cursor
+        self.db = Db.Db()
         self.ID = rsvID
         # guestID == Passport, INE, driving license, etc...
         # otherGuests == People other than the one who made the reservation.
@@ -31,20 +32,18 @@ class ReservationD(DataItem):
 
     def createFromID(self):
         """Init room from ID."""
-        db = Db.Db()
-        rsvData = db.getReservation(self.ID, self.cursor)
+        rsvData = self.db.getReservation(self.ID, self.cursor)
         x = 0
         for item in self.items:
             setattr(self, item, rsvData[x])
             x += 1
 
         # self.rsvID = self.ID
-        self.rooms = db.getReservationRooms(self.rsvID, self.cursor)
-        self.extras = db.getReservationExtras(self.rsvID, self.cursor)
-        self.otherGuests = db.getReservationOGuests(self.rsvID, self.cursor)
-        self.parking = db.getReservationParking(self.rsvID, self.cursor)
-        self.roomIDs = db.getReservationRoomsIDs(self.rsvID, self.cursor)
-        self.cursor = None
+        self.rooms = self.db.getReservationRooms(self.rsvID, self.cursor)
+        self.extras = self.db.getReservationExtras(self.rsvID, self.cursor)
+        self.otherGuests = self.db.getReservationOGuests(self.rsvID, self.cursor)
+        self.parking = self.db.getReservationParking(self.rsvID, self.cursor)
+        self.roomIDs = self.db.getReservationRoomsIDs(self.rsvID, self.cursor)
 
     def assignRooms(self, cursor=None):
         """Assign the rooms to the reservation."""
@@ -52,36 +51,20 @@ class ReservationD(DataItem):
         # with the most occupied rooms. Rooms are grouped because they can share AC or
         # water heaters, so grouping them makes sense economically.
         # if there are no rooms already occupied, randomly assign it.
-
-        # When instantiating a reservation it is passed a cursor object, but it is deleted
-        # after a while because the connectionto the db needs to be closed.
-        if self.cursor is None and cursor is not None:
-            self.cursor = cursor
-        else:
-            print("Missing Cursor on reservation assignRooms")
-            return
         if len(self.roomIDs) == 0:
-            db = Db.Db()
             roomIDs = []
             for roomType in self.rooms:
                 for room in range(roomType[3]):
                     din = datetime.datetime.strptime(self.dateIn, "%Y-%m-%d")
                     dout = datetime.datetime.strptime(self.dateOut, "%Y-%m-%d")
-                    roomIDs.append(db.getBestRoom(din, dout, roomType[2], cursor))
+                    roomIDs.append(self.db.getBestRoom(din, dout, roomType[2], cursor))
             for room in roomIDs:
-                db.insertRsvRoomID(self.rsvID, room, self.cursor)
-            self.roomIDs = db.getReservationRoomsIDs(self.rsvID, self.cursor)
-        self.cursor = None
+                self.db.insertRsvRoomID(self.rsvID, room, self.cursor)
+            self.roomIDs = self.db.getReservationRoomsIDs(self.rsvID, self.cursor)
 
     def getGuestName(self):
         """Return formatted name."""
-        db = Db.Db()
-        startConnection = db.startConnection()
-        connection = startConnection[0]
-        cursor = startConnection[1]
-
-        guest = db.getGuest(self.guestID, cursor)
-        db.endConnection(connection)
+        guest = self.db.getGuest(self.guestID, self.cursor)
         return guest[2] + ", " + guest[1]
 
     def getNights(self):
@@ -127,13 +110,7 @@ class ReservationD(DataItem):
 
     def getRoomForDashboard(self, parent):
         """Return room object for dashboard when not multiroom."""
-        db = Db.Db()
-        startConnection = db.startConnection()
-        connection = startConnection[0]
-        cursor = startConnection[1]
-
-        room = Room.RoomD(self.roomIDs[0][2], cursor, parent)
-        db.endConnection(connection)
+        room = Room.RoomD(self.roomIDs[0][2], parent, self.cursor)
         return room
 
 

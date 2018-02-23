@@ -8,13 +8,14 @@ import Db
 class RoomD(DataItem):
     """Data representation of a room."""
 
-    def __init__(self, roomNo, cursor, parent):
+    def __init__(self, roomNo, parent, cursor):
         """Init."""
         super().__init__(parent)
 
         self.ID = roomNo
 
         self.cursor = cursor
+        self.db = Db.Db()
 
         self.items = [
             "roomNo", "roomType", "roomTypeDesc", "beds", "maxCapacity", "extras",
@@ -28,11 +29,9 @@ class RoomD(DataItem):
 
     def roomFromId(self):
         """Init room from ID."""
-        db = Db.Db()
-
-        roomData = db.getRoom(self.ID, self.cursor)
-        roomTypeData = db.getRoomType(roomData[1], self.cursor)
-        roomExtrasData = db.getRoomExtras(self.ID, self.cursor)
+        roomData = self.db.getRoom(self.ID, self.cursor)
+        roomTypeData = self.db.getRoomType(roomData[1], self.cursor)
+        roomExtrasData = self.db.getRoomExtras(self.ID, self.cursor)
 
         self.roomNo = self.ID
         self.roomType = roomTypeData[0]
