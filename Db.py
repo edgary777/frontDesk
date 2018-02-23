@@ -1,7 +1,6 @@
 import sqlite3
 import datetime
 import random
-import datetime
 
 
 class Db(object):
@@ -374,8 +373,7 @@ class Db(object):
 
     def selectCount(self, table, column, cursor):
         """Return the number of instances of a value in a table."""
-        query = """SELECT COUNT({}) FROM {};""".format(
-            column, table, column)
+        query = """SELECT COUNT({}) FROM {};""".format(column, table, column)
         cursor.execute(query)
         items = cursor.fetchone()[0]
 
@@ -568,7 +566,7 @@ class Db(object):
 
     def getGuest(self, guestID, cursor):
         """Return guest data."""
-        return  self.selectiveQuery("guests", "*", "guestID", guestID)[0]
+        return self.selectiveQuery("guests", "*", "guestID", guestID)[0]
 
     def getCompanies(self, cursor):
         """Return all companies."""
@@ -605,7 +603,8 @@ class Db(object):
         roomGroups = {}
         roomGroupsCount = self.getRoomsGroupCount(cursor)
         for roomGroup in range(1, roomGroupsCount):
-            roomGroups[roomGroup] = self.selectCountWhere("rooms", "roomGroup", [str(roomGroup)], cursor)
+            roomGroups[roomGroup] = self.selectCountWhere(
+                "rooms", "roomGroup", [str(roomGroup)], cursor)
         return roomGroups
 
     def getRoomGroupsForDate(self, date, cursor):
@@ -624,7 +623,7 @@ class Db(object):
         roomGroupsCount = self.getRoomsGroupCount(cursor)
 
         # this is to avoid getting a key error when initially filling the dict.
-        groupsAfter = {x:None for x in range(1, roomGroupsCount)}
+        groupsAfter = {x: None for x in range(1, roomGroupsCount)}
 
         # To get the group with the most occupied rooms in a range of days we need to
         # check day by day how many rooms where occupied on each group. We only need the
@@ -637,7 +636,8 @@ class Db(object):
                     groupsAfter[roomGroup] = x[roomGroup]
         groupsPercentage = {}
         for roomGroup in range(1, roomGroupsCount):
-            groupsPercentage[roomGroup] = abs((groupsAfter[roomGroup] / groups[roomGroup]) - 1)
+            groupsPercentage[roomGroup] = abs(
+                (groupsAfter[roomGroup] / groups[roomGroup]) - 1)
 
         return groupsPercentage
 
@@ -694,7 +694,7 @@ class Db(object):
         # Try and get a free room of roomType in the most occupied roomGroup.
         for group in orderedGroups:
             room = self.getRoomOfTypeInGroup(roomType, group, cursor)
-            if not room is None:
+            if room is not None:
                 break
         if room is None:
             # How come there are no rooms!???
@@ -716,7 +716,8 @@ class Db(object):
         roomGroupsCount = self.getRoomsGroupCount(cursor)
         for roomGroup in range(1, roomGroupsCount):
             # We get the count of rooms of the passed type in each group
-            roomsGroups[roomGroup] = self.getRoomsOfTypeInGroup(roomGroup, roomType, cursor)
+            roomsGroups[roomGroup] = self.getRoomsOfTypeInGroup(
+                roomGroup, roomType, cursor)
         for rsv in rsvs:
             # now we must check the reservations that are using a room on that day
             # and decrease the amount of available rooms by the ones they are occupying.
@@ -828,7 +829,7 @@ class dummyDb(object):
         """Insert guest data in database."""
         columns = [
             "name", "lastName", "age", "notes", "registerDate", "userID"
-        ]
+            ]
         query = self.insertQuery("guests", data, columns)
         cursor.execute(query[0], query[1])
         # We need the ID to add to it's extras.
@@ -840,7 +841,7 @@ class dummyDb(object):
         columns = [
             "guestID", "country", "region", "city", "street", "zone",
             "extNumber", "intNumber", "cp"
-        ]
+            ]
         query = self.insertQuery("guestAddresses", data, columns)
         cursor.execute(query[0], query[1])
 
@@ -848,7 +849,7 @@ class dummyDb(object):
         """Insert guest phone data in database."""
         columns = [
             "guestID", "countryCode", "regionCode", "phone", "ext", "name"
-        ]
+            ]
         query = self.insertQuery("guestPhones", data, columns)
         cursor.execute(query[0], query[1])
 
@@ -869,7 +870,7 @@ class dummyDb(object):
         columns = [
             "businessName", "companyName", "RFC", "notes", "registerDate",
             "userID"
-        ]
+            ]
         query = self.insertQuery("companies", data, columns)
         cursor.execute(query[0], query[1])
         # We need the ID to add to it's extras.
@@ -882,7 +883,7 @@ class dummyDb(object):
         columns = [
             "companyID", "country", "region", "city", "street", "zone",
             "extNumber", "intNumber", "cp"
-        ]
+            ]
         query = self.insertQuery("companyAddresses", data, columns)
         cursor.execute(query[0], query[1])
 
@@ -890,7 +891,7 @@ class dummyDb(object):
         """Insert company phone data in database."""
         columns = [
             "companyID", "countryCode", "regionCode", "phone", "ext", "name"
-        ]
+            ]
         query = self.insertQuery("companyPhones", data, columns)
         cursor.execute(query[0], query[1])
 
@@ -912,7 +913,7 @@ class dummyDb(object):
             "guestID", "statusID", "userID", "companyID", "adults", "minors",
             "dateIn", "dateOut", "rate", "paid", "rsvgroup", "notes",
             "registerDate"
-        ]
+            ]
         query = self.insertQuery("reservations", data, columns)
         cursor.execute(query[0], query[1])
         lastID = cursor.lastrowid
@@ -995,14 +996,14 @@ class dummyDb(object):
         self.newUser(cursor, [0, 0, "root", "raspberry", today, 0], [
             "userID", "typeID", "name", "password", "registerDate",
             "registeredBy"
-        ])
+            ])
         # Now we populate the database with more dummy database
         roomStatusDefs = [[0, "LIBRE", "EL CUARTO ESTA LIBRE"], [
             1, "EN LIMPIEZA", "EL CUARTO ESTA LIBRE Y SE ESTA LIMPIANDO"
-        ], [2, "OCUPADO", "EL CUARTO ESTA OCUPADO"], [
+            ], [2, "OCUPADO", "EL CUARTO ESTA OCUPADO"], [
             3, "FUERA DE SERVICIO",
             "EL CUARTO ESTA FUERA DE SERVICIO Y NO SE PUEDE OCUPAR"
-        ]]
+            ]]
         for status in roomStatusDefs:
             self.newRoomStatusDef(cursor, status)
 
@@ -1173,7 +1174,7 @@ class dummyGenerator(object):
             "Maria", "Maricela", "Mario", "Miguel", "Antonieta", "Luis",
             "Luisa", "Regina", "Renata", "Alejandro", "Alejandra", "Francisco",
             "Salvador", "Ignacio", "Walter", "Arturo", "Hector"
-        ]
+            ]
         if random.random() > 0.8:
             return random.sample(names, 1)[0] + " " + random.sample(names,
                                                                     1)[0]
@@ -1188,7 +1189,7 @@ class dummyGenerator(object):
             "Treviño", "Mesa", "Fernandez", "Ramos", "Russek", "Vargas",
             "Alvarado", "Saltijeral", "Rodriguez", "Barrera", "Hernandez",
             "Felix", "Diaz"
-        ]
+            ]
 
         return random.sample(lastNames, 1)[0] + " " + random.sample(
             lastNames, 1)[0]
@@ -1201,17 +1202,17 @@ class dummyGenerator(object):
             "Treviño", "Mesa", "Fernandez", "Ramos", "Russek", "Vargas",
             "Alvarado", "Saltijeral", "Rodriguez", "Barrera", "Hernandez",
             "Felix", "Diaz"
-        ]
+            ]
         activity = [
             "Boda", "Reunion", "Familia", "Fiesta", "Tertulia",
             "Primera Comunión", "Club"
-        ]
+            ]
 
         words = [
             "Splatoon", "INC", "Coral", "Fox", "Canal", "Banda", "PC", "Coca",
             "THC", "Gema", "Plateros", "BirdWatchers", "Ciclistas", "Motos",
             "Panamericana"
-        ]
+            ]
 
         if random.random() > 0.7:
             return random.sample(words, 1)[0]
@@ -1251,17 +1252,17 @@ class dummyGenerator(object):
             "Treviño", "Mesa", "Fernandez", "Ramos", "Russek", "Vargas",
             "Alvarado", "Saltijeral", "Rodriguez", "Barrera", "Hernandez",
             "Felix", "Diaz"
-        ]
+            ]
         activity = [
             "Boda", "Reunion", "Familia", "Fiesta", "Tertulia",
             "Primera Comunión", "Club"
-        ]
+            ]
 
         words = [
             "Splatoon", "INC", "Coral", "Fox", "Canal", "Banda", "PC", "Coca",
             "THC", "Gema", "Plateros", "BirdWatchers", "Ciclistas", "Motos",
             "Panamericana"
-        ]
+            ]
         lists = [lastName, activity, words]
         note = ""
         for i in range(random.randint(1, 100)):
@@ -1282,11 +1283,11 @@ class dummyGenerator(object):
             "INC", "Coral", "Fox", "Canal", "Banda", "PC", "Coca", "THC",
             "Gema", "Plateros", "BirdWatchers", "Ciclistas", "Motos",
             "Panamericana"
-        ]
+            ]
         esp = [
             "gmail.com", "hotmail.com", "hotmail.com.mx", "live.com",
             "live.com.mx", "hotmail.es"
-        ]
+            ]
         if random.random() > 0.6:
             return random.sample(names, 1)[0] + "." + random.sample(
                 names, 1)[0] + "@" + random.sample(esp, 1)[0]
@@ -1299,7 +1300,7 @@ class dummyGenerator(object):
         characters = [
             "A", "B", "C", "D", "E", "F", "0", "1", "2", "3", "4", "5", "6",
             "7", "8", "9"
-        ]
+            ]
         streets = [
             "CUITLAHUAC", "CUAUHTEMOC", "PATONI", "ZARAGOZA", "ARBOLES",
             "PALMAS", "PLANTAS", "VASOS", "CRISTAL", "GEMA", "CARRETE", "BUHO",
@@ -1308,7 +1309,7 @@ class dummyGenerator(object):
             "FRANCIA", "MANDARIN", "VERDE", "AZUL", "AQUA", "GRIS", "FLORES",
             "MARGARITA", "AVIONES", "CARTON", "ESCALERA", "COLGANTE",
             "HOJUELA", "HOJAS"
-        ]
+            ]
         nationality = self.dummyNationality()
         country = nationality[0]
         region = nationality[1]
@@ -1322,16 +1323,16 @@ class dummyGenerator(object):
         return [
             ownerID, country, region, city, street, zone, extNumber, intNumber,
             cp
-        ]
+            ]
 
     def dummyPhone(self):
         """Return random phone data."""
         ownerID = None
 
-        countryCode = "+" + str(
-            "".join([str(random.randint(0, 9)) for i in range(2)]))
-        regionCode = int(
-            "".join([str(random.randint(0, 9)) for i in range(3)]))
+        countryCode = "+" + str("".join(
+            [str(random.randint(0, 9)) for i in range(2)]))
+        regionCode = int("".join(
+            [str(random.randint(0, 9)) for i in range(3)]))
         phone = int("".join([str(random.randint(0, 9)) for i in range(7)]))
         if random.random() > 0.9:
             ext = int("".join([str(random.randint(0, 9)) for i in range(3)]))
@@ -1347,7 +1348,7 @@ class dummyGenerator(object):
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
             "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
             "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
-        ]
+            ]
         plateNo = "".join(random.choices(characters, k=7))
         cars = [
             "Transdeet", "Tritned", "Dlunt", "Cippa", "Ragunk", "Znasot",
@@ -1358,7 +1359,7 @@ class dummyGenerator(object):
             "Transfable", "Gallxain", "Mumpa", "Vuca", "Qafouse", "Luvty",
             "Duay", "Autoun", "Subxan", "Ija", "Comoming", "Irleet", "Dishu",
             "Smarsi", "Lebter", "Twabap", "Iroof", "Scaram", "Staxod", "Uthe"
-        ]
+            ]
         car = "".join(random.choices(cars, k=1))
 
         return (None, plateNo, car)
@@ -1379,7 +1380,7 @@ class dummyGenerator(object):
             "ITALIA", "CHINA", "TURQUIA", "GRECIA", "POLONIA", "DOCLOIYA",
             "OPLOYZE", "WOWHYAE", "QECLYE", "SCIUCE", "SNAERHIEL", "ASKUS",
             "PLUE STRARIA", "PRAU SKEAU"
-        ]
+            ]
         regions = [
             "TUCHUYNGA", "UGROYSO", "PUWHYE", "XOFRA", "TRAEYAE", "CLIOCOR",
             "ACHYAE", "OPLIL", "SWUOM STIA", "SKIOV CHARIA", "ESPEDOZA",
@@ -1392,12 +1393,12 @@ class dummyGenerator(object):
             "MATILE", "TENANCAGUA", "ANTINANGO", "ANTITAPA", "GUASTALONGA",
             "NACAONOPE", "LEJANOPE", "TIZAS", "DIPIPANECA", "LA ESNAZAS",
             "LOS ALCUMEN"
-        ]
+            ]
 
         states = [
             "DURANGO", "COAHUILA", "SONORA", "PUEBLA", "SINALOA", "HIDALGO",
             "CHIHUAHUA", "NAYARIT", "ZACATECAS", "CHIAPAS", "CDMX", "MONTERREY"
-        ]
+            ]
 
         if random.random() > 0.80:
             country = random.sample(countries, 1)[0]
@@ -1467,7 +1468,7 @@ class dummyGenerator(object):
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
             "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
             "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
-        ]
+            ]
         # stats = ["LIBRE", "EN LIMPIEZA", "OCUPADO", "FUERA DE SERVICIO"]
         # For testing, 5% of rooms will be out of service.
         if random.random() < 0.95:
@@ -1511,7 +1512,7 @@ class dummyGenerator(object):
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
             "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
             "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
-        ]
+            ]
         IDNo = "".join(random.choices(characters, k=13))
         guestIDD = [None, ID, IDNo]
 
@@ -1553,13 +1554,13 @@ class dummyGenerator(object):
             "Zeus Softwares", "Cloud Acoustics", "Tucanterprises",
             "Rosecurity", "Oceanavigations", "Moondustries", "Redfly",
             "Blossomwheels", "Coremart"
-        ]
+            ]
 
         characters = [
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
             "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
             "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
-        ]
+            ]
 
         businessName = random.sample(names, 1)[0]
         companyName = random.sample(names, 1)[0] + " SA de CV"
@@ -1685,7 +1686,7 @@ class dummyGenerator(object):
             guestID, statusID, userID, companyID, adults, minors,
             dateIn.date(),
             dateOut.date(), rate, paid, group, note
-        ], rooms, otherGuests, extras, parking]
+            ], rooms, otherGuests, extras, parking]
 
 
 # db = Db()

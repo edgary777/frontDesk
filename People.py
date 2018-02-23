@@ -1,4 +1,3 @@
-import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -26,7 +25,7 @@ class GuestD(DataItem):
         self.items = [
             "ID", "name", "lastName", "guestID", "age", "phones", "emails",
             "addresses", "country", "state", "county", "notes"
-        ]
+            ]
 
         for item in self.items:
             setattr(self, item, None)
@@ -63,7 +62,7 @@ class CompanyD(DataItem):
         self.items = [
             "ID", "businessName", "companyName", "addresses", "phones",
             "emails", "RFC", "contact", "country", "state", "county", "notes"
-        ]
+            ]
 
         for item in self.items:
             setattr(self, item, None)

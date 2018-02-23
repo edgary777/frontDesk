@@ -129,7 +129,7 @@ class DashItemUi(QWidget):
             "type": (1, 1, 1, 1, "RoType"),
             "beds": (0, 3, 1, 1, "RoBeds"),
             "max": (0, 4, 1, 1, "RoMaxCap")
-        }
+            }
 
         layout = QGridLayout()
 
@@ -163,7 +163,7 @@ class DashItemUi(QWidget):
                 "group": (0, 4, 1, 1, "ReGroup"),
                 "extras": (0, 5, 1, 2, "ReExtras"),
                 "nights": (1, 4, 1, 1, "ReNights")
-            }
+                }
         else:
             # to be honest, I don't know why there are to layout setups.
             items = {
@@ -173,7 +173,7 @@ class DashItemUi(QWidget):
                 "status": (0, 2, 2, 1, "RoStatus"),
                 "total": (0, 4, 2, 1, "ReTotal"),
                 "owed": (0, 5, 2, 1, "ReOwed")
-            }
+                }
         return items
 
     def singleRoomUi(self):
@@ -207,7 +207,7 @@ class DashItemUi(QWidget):
         items = {
             "name": (0, 1, 1, 1, "ReName"),
             "group": (1, 1, 1, 1, "ReGroup")
-        }
+            }
 
         # Labels from items
         for key, value in items.items():
@@ -303,7 +303,7 @@ class DashItem(QWidget):
             print("DashItem")
             print(
                 "You either forgot to pass a reservation or got the type wrong"
-            )
+                )
             raise
 
         self.reservation = reservation
@@ -317,7 +317,7 @@ class DashItem(QWidget):
             "RoExtras", "RoMaxCap", "RoBeds", "ReName", "ReDateIn",
             "ReDateOut", "ReNights", "ReAdults", "ReMinors", "ReGroup",
             "ReExtras", "ReNotes", "ReTotal", "RePaid", "ReOwed"
-        ]
+            ]
 
         self.setup(Type)  # 0 == In, 1 == out, 2 == status
 

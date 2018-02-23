@@ -3,13 +3,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 import SideBar
 from Dashboard import DashScroll, DashItem
-import random
-import Room
-import Reservation
-import People
 import Manager
-import Db
-import datetime
 
 
 class Session(QWidget):

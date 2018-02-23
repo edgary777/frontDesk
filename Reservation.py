@@ -22,7 +22,7 @@ class ReservationD(DataItem):
             "rsvID", "guestID", "statusID", "userID", "companyID", "adults",
             "minors", "dateIn", "dateOut", "rate", "paid", "rsvgroup",
             "notes", "registerDate"
-        ]
+            ]
 
         for item in self.items:
             setattr(self, item, None)
@@ -55,7 +55,7 @@ class ReservationD(DataItem):
 
         # When instantiating a reservation it is passed a cursor object, but it is deleted
         # after a while because the connectionto the db needs to be closed.
-        if self.cursor is None and not cursor is None:
+        if self.cursor is None and cursor is not None:
             self.cursor = cursor
         else:
             print("Missing Cursor on reservation assignRooms")
@@ -112,7 +112,7 @@ class ReservationD(DataItem):
         return self.roomIDs
 
     def getExtras(self):
-        """Return the reservation extras"""
+        """Return the reservation extras."""
         return self.extras
 
     def gotNote(self):
@@ -135,6 +135,7 @@ class ReservationD(DataItem):
         room = Room.RoomD(self.roomIDs[0][2], cursor, parent)
         db.endConnection(connection)
         return room
+
 
 class ReservationUi(QWidget):
     """Graphic representation of a reservation."""

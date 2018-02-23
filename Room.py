@@ -17,9 +17,9 @@ class RoomD(DataItem):
         self.cursor = cursor
 
         self.items = [
-            "roomNo", "roomType", "roomTypeDesc", "beds", "maxCapacity", "extras", "status",
-            "notes", "roomTypeLongDesc"
-        ]
+            "roomNo", "roomType", "roomTypeDesc", "beds", "maxCapacity", "extras",
+            "status", "notes", "roomTypeLongDesc"
+            ]
 
         for item in self.items:
             setattr(self, item, None)

@@ -1,8 +1,5 @@
 import Room
 import Reservation
-import People
-import random
-import datetime
 import Db
 
 
@@ -46,15 +43,7 @@ class RoomManager(object):
 
     def roomsForDay(self, date, Type, amount):
         """Return data objects of free rooms on the passed date."""
-        db = Db.Db()
-        rooms = db.getRooms()
-        roomsD = db.getFreeRoomsForDay(date)
-        roomsID = []
-        if roomsD[Type] >= amount:
-            for i in range(amount):
-                for roomNo in rooms:
-                    roomsID.append(ID)
-        return roomsID
+        pass
 
     def roomsForPeriod(self, start, end):
         """Return list of free rooms.
