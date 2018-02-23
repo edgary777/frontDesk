@@ -69,6 +69,7 @@ class ReservationManager(object):
 
     def __init__(self, parent):
         """Init."""
+        self.db = Db.Db()
         self.parent = parent
 
     def makeReservation(self):
@@ -90,6 +91,40 @@ class ReservationManager(object):
     def getFreeRooms(self, day):
         """Return list of free room slots by type."""
         pass
+
+    def getFinishedRsvs(self):
+        """Return list of ReservationD Objects of finished reservations."""
+        startConnection = self.db.startConnection()
+        connection = startConnection[0]
+        cursor = startConnection[1]
+
+        rsvIDs = self.db.selectFinishedRsvs(cursor)
+        rsvs = []
+
+        for rsv in rsvIDs:
+            rsvs.append(Reservation.ReservationD(rsv[0], cursor, self.parent))
+
+        for rsv in rsvs:
+            rsv.assignRooms(cursor)
+
+        self.db.endConnection(connection)
+
+    def getActiveRsvs(self):
+        """Return list of ReservationD Objects of finished reservations."""
+        startConnection = self.db.startConnection()
+        connection = startConnection[0]
+        cursor = startConnection[1]
+
+        rsvIDs = self.db.selectActiveRsvs(cursor)
+        rsvs = []
+
+        for rsv in rsvIDs:
+            rsvs.append(Reservation.ReservationD(rsv[0], cursor, self.parent))
+
+        for rsv in rsvs:
+            rsv.assignRooms(cursor)
+
+        self.db.endConnection(connection)
 
 
 class CheckInManager(object):
@@ -133,19 +168,24 @@ class CheckInManager(object):
 class CheckOutManager(object):
     """CheckOuts manager."""
 
-    def __init__(self, db, parent):
+    def __init__(self, parent):
         """Init."""
-        self.db = db
+        self.db = Db.Db()
         self.parent = parent
 
     def getToday(self):
         """Return data objects of the reservations that will Check-Out today."""
-        db = Db.Db(self.db)
-        rsvD = db.getTodayCheckOuts()
-        rsvs = []
-        for rsv in rsvD:
-            rsvs.append(Reservation.ReservationD(rsv, self.db, self.parent))
-        return rsvs
+        startConnection = self.db.startConnection()
+        connection = startConnection[0]
+        cursor = startConnection[1]
+
+        rsvD = self.db.getTodayCheckOuts(cursor)
+        reservations = []
+        for rsvID in rsvD:
+            reservations.append(Reservation.ReservationD(rsvID[0], cursor, self.parent))
+
+        self.db.endConnection(connection)
+        return reservations
 
     def updateRoom(self, room):
         """Update room status."""

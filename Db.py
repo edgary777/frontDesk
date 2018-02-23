@@ -2,6 +2,7 @@ import sqlite3
 import datetime
 import random
 import datetime
+import Reservation
 
 
 class Db(object):
@@ -465,6 +466,34 @@ class Db(object):
         """Return Check-Outs for date."""
         date = [str(date)]
         query = """SELECT `rsvId` FROM reservations WHERE dateOut= ?"""
+        cursor.execute(query, date)
+        items = cursor.fetchall()
+
+        return items
+
+    def selectFinishedRsvs(self, cursor):
+        """Return rsvId of finished reservations.
+
+        Only of reservations whose checkins where before today and whose checkouts where
+        also before today.
+        """
+        date = datetime.datetime.today().date()
+        date = [date, date]
+        query = """SELECT `rsvId` FROM reservations WHERE dateIn< ? and dateOut< ?"""
+        cursor.execute(query, date)
+        items = cursor.fetchall()
+
+        return items
+
+    def selectActiveRsvs(self, cursor):
+        """Return rsvId of active reservations.
+
+        Only of reservations whose checkins where before today and whose checkouts are
+        today or later on..
+        """
+        date = datetime.datetime.today().date()
+        date = [date, date]
+        query = """SELECT `rsvId` FROM reservations WHERE dateIn< ? and dateOut>= ?"""
         cursor.execute(query, date)
         items = cursor.fetchall()
 
@@ -1121,6 +1150,9 @@ class dummyDb(object):
                 for parking in reservationData[4]:
                     parking[0] = rsvID
                     self.newRsvParking(cursor, parking)
+
+        # Assign rooms to all reservations whose checkins were before today.
+        # Also, if their checkout was also before today change their status to finished.
 
         self.endConnection(connection)
 

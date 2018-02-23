@@ -69,13 +69,15 @@ class Session(QWidget):
 
     def updateCheckOut(self):
         """Update the checkOut scroller."""
-        # manager = Manager.CheckOutManager(self)
-        # checkOuts = manager.getToday()
-        # items = []
-        # for cout in checkOuts:
-        #     items.append(DashItem(1, self, reservation=cout))
-        # self.checkOut.getList().addItems(items)
-        pass
+        rsvManager = Manager.ReservationManager(self)
+        rsvManager.getActiveRsvs()
+        rsvManager.getFinishedRsvs()
+        manager = Manager.CheckOutManager(self)
+        checkOuts = manager.getToday()
+        items = []
+        for cout in checkOuts:
+            items.append(DashItem(1, self, reservation=cout))
+        self.checkOut.getList().addItems(items)
 
     def updateStatus(self):
         """Update the roomStatus scroller."""
