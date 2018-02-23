@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## Unreleased
 ### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+
+## V0.4.0
+### Added
 - New module Dashboard. The dashboard will show lists with relevant room/reservation data
     (eg. today's check-in and check-out data).
     These lists items can be interactive.
@@ -13,12 +22,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
     of other modules that share some basic features.
 - New modules Reservation and Room. Each containing its graphic and data representation.
 - New module People. Contains Guest, Company, and User graphic and data representations.
+- New module Db. Handles the communication with de database.
+- New module Manager. handles the interactions between the UI and the database
 
-### Removed
-
-### Changed
-
-### Fixed
 
 ## V0.3.0
 ### Added
