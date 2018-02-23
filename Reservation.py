@@ -5,7 +5,6 @@ from DataItems import DataItem
 import Room
 import Db
 import datetime
-import Manager
 
 
 class ReservationD(DataItem):
