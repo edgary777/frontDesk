@@ -2,7 +2,6 @@ import sqlite3
 import datetime
 import random
 import datetime
-import Reservation
 
 
 class Db(object):
@@ -1150,9 +1149,6 @@ class dummyDb(object):
                 for parking in reservationData[4]:
                     parking[0] = rsvID
                     self.newRsvParking(cursor, parking)
-
-        # Assign rooms to all reservations whose checkins were before today.
-        # Also, if their checkout was also before today change their status to finished.
 
         self.endConnection(connection)
 
