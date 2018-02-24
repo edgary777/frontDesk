@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Removed
 
 ### Changed
+- Changed the SideBar to a MenuBar so the layout makes more sense.
 
 ### Fixed
 

@@ -18,26 +18,26 @@ class SideBar(QWidget):
 
     def initUi(self):
         """Ui Setup."""
-        layout = QVBoxLayout()
+        layout = QHBoxLayout()
         self.setLayout(layout)
-        self.setFixedWidth(200)
-        self.setMinimumWidth(120)
-        self.setMaximumWidth(250)
-        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+        self.setFixedHeight(120)
+        self.setMinimumHeight(100)
+        self.setMaximumHeight(150)
+        self.setMinimumWidth(800)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.color = [self.rando(), self.rando(), self.rando()]
         buttons = self.generateButtons(self.items)
 
-        layout.setContentsMargins(0, 0, 0, 0)
         layout.addLayout(buttons)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        layout.addStretch()
+        # layout.addStretch()
 
     def generateButtons(self, items):
         """Return layout with buttons."""
         x = 0
         colorRGB = self.color
-        print(colorRGB)
-        layout = QVBoxLayout()
+        layout = QHBoxLayout()
         layout.setSpacing(0)
 
         # Here we make the gradient style for the buttons.
@@ -61,7 +61,7 @@ class SideBar(QWidget):
         for btn in reversed(btns):
             layout.addWidget(btn)
 
-        layout.addStretch()
+        # layout.addStretch()
         return layout
 
     def rando(self):
@@ -106,3 +106,13 @@ class SideBar(QWidget):
         p = self.palette()
         p.setColor(self.backgroundRole(), color)
         self.setPalette(p)
+
+    def resizeEvent(self, event):
+        """Resize Event."""
+        width = self.width() / 4
+        print(width)
+        width = 200 if width < 200 else width
+        x = 0
+        for i in reversed(self.items):
+            getattr(self, "btn" + str(x)).resizeMe(width)
+            x += 1

@@ -192,7 +192,7 @@ class SideBarBtn(QAbstractButton):
     def initUi(self):
         """Ui Setup."""
         self.setMinimumHeight(35)
-        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         iconSize = 30
 
@@ -207,6 +207,7 @@ class SideBarBtn(QAbstractButton):
         self.qlabel.setAlignment(Qt.AlignCenter)
 
         layout = QHBoxLayout()
+        layout.addStretch()
         layout.addWidget(icon)
         layout.addWidget(self.qlabel)
         layout.addStretch()
@@ -245,17 +246,16 @@ class SideBarBtn(QAbstractButton):
         p.setColor(self.backgroundRole(), color)
         self.setPalette(p)
 
+    def resizeMe(self, width):
+        """Resize the button."""
+        self.setMaximumWidth(width)
+
     def resizeEvent(self, event):
         """Resize Event."""
-        # for the
-        self.setFixedWidth(self.parent.getWidth())
-        height = self.parent.getWidth() / 4
-        height = 35 if height < 35 else height
-        self.setFixedHeight(height)
-        self.setMinimumWidth(self.width() - 10)
-        self.setMaximumWidth(self.width() + 10)
-        size = self.width() * 0.07
-        size = "20" if size > 20 else str(size)
+        height = self.parent.getHeight()
+        self.setMaximumHeight(height)
+        size = self.width() * 0.08
+        size = "7" if size < 7 else str(size)
         style = """QLabel{{
             color: white;
             font-weight: bold;
@@ -263,6 +263,6 @@ class SideBarBtn(QAbstractButton):
         }}""".format(size)
         self.qlabel.setStyleSheet(style)
 
-    def minimumSizeHint(self):
-        """Set the minimum size hint."""
-        return QSize(self.widths, self.heights)
+    # def minimumSizeHint(self):
+    #     """Set the minimum size hint."""
+    #     return QSize(self.widths, self.heights)
