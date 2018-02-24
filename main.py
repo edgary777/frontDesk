@@ -23,6 +23,8 @@ class MainWindow(QWidget):
         self.session = self.start()
         layout = QVBoxLayout()
         layout.addWidget(self.session)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
 
         self.setLayout(layout)
 

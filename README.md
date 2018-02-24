@@ -1,6 +1,6 @@
 # frontDesk
 
-Software for the front-desk management of a small hotel.
+Software for the front-desk management of small hotels.
 
 ## Status
 
