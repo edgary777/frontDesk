@@ -110,7 +110,6 @@ class MenuBar(QWidget):
     def resizeEvent(self, event):
         """Resize Event."""
         width = self.width() / 4
-        print(width)
         width = 200 if width < 200 else width
         x = 0
         for i in reversed(self.items):
