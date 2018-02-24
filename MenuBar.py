@@ -5,8 +5,8 @@ import random
 import Buttons
 
 
-class SideBar(QWidget):
-    """Side bar object."""
+class MenuBar(QWidget):
+    """Menu bar object."""
 
     def __init__(self, items, parent):
         """Init."""
@@ -50,7 +50,7 @@ class SideBar(QWidget):
             label = str(i)
             icon = "Resources\c-close.png"
             setattr(self, "btn" + str(x),
-                    Buttons.SideBarBtn(color, label, icon, self))
+                    Buttons.MenuBarBtn(color, label, icon, self))
             btns.append(getattr(self, "btn" + str(x)))
             # layout.addWidget(getattr(self, "btn" + str(x)))
             li = []

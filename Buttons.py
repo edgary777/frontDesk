@@ -161,9 +161,9 @@ class SimpleBtn(QAbstractButton):
         return QSize(self.widths, self.heights)
 
 
-class SideBarBtn(QAbstractButton):
+class MenuBarBtn(QAbstractButton):
     """
-    Side Bar Button.
+    Menu Bar Button.
 
     Color MUST be an rgb string array (eg. red = "255, 0, 0")
 

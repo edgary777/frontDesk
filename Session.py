@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-import SideBar
+import MenuBar
 from Dashboard import DashScroll, DashItem
 import Manager
 
@@ -24,7 +24,7 @@ class Session(QWidget):
         layout = QVBoxLayout()
 
         btnList = ["Reservación", "Check-In", "Check-Out", "Configuración"]
-        sidebar = SideBar.SideBar(btnList, self)
+        menubar = MenuBar.MenuBar(btnList, self)
 
         self.checkIn = DashScroll(self)
         self.checkOut = DashScroll(self)
@@ -43,7 +43,7 @@ class Session(QWidget):
         dashLayout.setStretchFactor(self.roomStatus, 2)
 
         layout.addLayout(dashLayout)
-        layout.addWidget(sidebar)
+        layout.addWidget(menubar)
 
         self.setLayout(layout)
 
