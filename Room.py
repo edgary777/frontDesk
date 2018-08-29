@@ -39,7 +39,7 @@ class RoomD(DataItem):
         self.beds = roomTypeData[2]
         self.maxCapacity = roomTypeData[3]
         self.roomTypeLongDesc = roomTypeData[4]
-        self.extras = [room[0] for room in roomExtrasData]
+        self.extras = [room[2] for room in roomExtrasData]
         self.status = roomData[2]
         self.notes = roomData[4]
 
