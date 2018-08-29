@@ -156,16 +156,16 @@ class DashItemUi(QWidget):
         """Return items for single room reservation."""
         items = None
         if self.dashItem.getType() == 0:
+            # This is for checkins
             items = {
                 "number": (0, 0, 2, 1, "RoNumber"),
                 "name": (0, 1, 1, 1, "ReName"),
                 "status": (0, 2, 2, 1, "RoStatus"),
                 "group": (0, 4, 1, 1, "ReGroup"),
-                "extras": (0, 5, 1, 2, "ReExtras"),
                 "nights": (1, 4, 1, 1, "ReNights")
-                }
+            }
         else:
-            # to be honest, I don't know why there are to layout setups.
+            # This is for checkouts
             items = {
                 "number": (0, 0, 2, 1, "RoNumber"),
                 "name": (0, 1, 1, 1, "ReName"),
@@ -197,6 +197,9 @@ class DashItemUi(QWidget):
             guestsIcons = self.guestsIcon(20, self.dItem["ReAdults"],
                                           self.dItem["ReMinors"])
             layout.addLayout(guestsIcons, 1, 1, 1, 1)
+
+            self.extras = self.extrasIcons(self.dItem["ReExtras"])
+            layout.addLayout(self.extras, 0, 5, 1, 2)
 
         # Layout setup
         self.setLayout(layout)
@@ -271,8 +274,8 @@ class DashItemUi(QWidget):
     def extrasIcons(self, extras):
         """Return a layout with the icons of the extras passed."""
         layout = QHBoxLayout()
-        for i in range(5):
-            pixmap = QPixmap("Resources/ac.png").scaled(
+        for i in range(len(extras)):
+            pixmap = QPixmap("Resources/extra_{}.png".format(i)).scaled(
                 20, 20, Qt.KeepAspectRatio)
             icon = QLabel()
             icon.setPixmap(pixmap)
