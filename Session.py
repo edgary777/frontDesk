@@ -59,7 +59,7 @@ class Session(QWidget):
         checkIns = manager.getToday()
         items = []
         for cin in checkIns:
-            items.append(DashItem(1, self, reservation=cin))
+            items.append(DashItem(0, self, reservation=cin))
         self.checkIn.getList().addItems(items)
 
     def updateCheckOut(self):
