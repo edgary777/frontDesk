@@ -89,6 +89,7 @@ class DashList(QWidget):
         for item in self.items:
             uiItem = DashItemUi(item, self)
             self.layout.addWidget(uiItem)
+        self.layout.addStretch()
 
     def updateUi(self):
         """Update the Ui."""
@@ -113,6 +114,7 @@ class DashItemUi(QWidget):
             self.IOUi()
         else:
             self.statusUi()
+        self.setFixedHeight(60)
 
     def IOUi(self):
         """Check-In and Check-Out Ui setup."""
