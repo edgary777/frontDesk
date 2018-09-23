@@ -1,3 +1,5 @@
+"""Visualizer for the database."""
+
 import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -37,9 +39,9 @@ class Visualizer(QWidget):
             "Guests": 7,
             "GuestIDDs": 4,
             "GuestPhones": 7,
-            "GuestAddresses": 10,
+            "reservations": 16,
             "GuestEmails": 4
-        }
+            }
 
         layout = QGridLayout()
         self.tablesList = []
@@ -74,7 +76,7 @@ class Visualizer(QWidget):
         tables = ["rooms", "roomStatusDefs", "roomTypesDefs", "roomExtrasDefs",
                   "roomExtras", "rsvStatusDefs", "companies", "companyContacts",
                   "companyPhones", "companyAddresses", "companyEmails", "guests",
-                  "guestsIDDs", "guestPhones", "guestAddresses", "guestEmails"]
+                  "guestsIDDs", "guestPhones", "reservations", "guestEmails"]
         t = 0
         for table in tables:
             data = db.getTableItems(table)
@@ -88,8 +90,7 @@ class Visualizer(QWidget):
                 for column in row:
                     prevItem = tableObj.item(r, c)
                     item = QTableWidgetItem(str(column))
-                    item.setTextAlignment(Qt.AlignRight|
-                                          Qt.AlignVCenter)
+                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
                     if prevItem:
                         if prevItem.text() != str(column):
                             item.setForeground(Qt.white)
