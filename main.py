@@ -100,16 +100,16 @@ if debugPrint is False:
 else:
     enablePrint()
 
-debug = False
+debugDb = False
 
-if debug:
+if debugDb:
     exists = os.path.isfile("database.db")
     if exists:
         os.remove("database.db")
 
 db = Db.Db()
 
-if debug:
+if debugDb:
     dummy = Db.dummyDb()
     dummy.dummyDB()
 
