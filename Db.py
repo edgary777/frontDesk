@@ -1,3 +1,5 @@
+"""Database communication implementation."""
+
 import sqlite3
 import datetime
 import random
@@ -149,6 +151,7 @@ class Db(object):
                );"""
         cursor.execute(query)
 
+        # TO DO: Other guests must at least have an adult/minor option, maybe age.
         query = """CREATE TABLE IF NOT EXISTS rsvOtherGuests(
                         ID INTEGER PRIMARY KEY AUTOINCREMENT,
                         rsvID INT REFERENCES reservations(rsvID) ON DELETE CASCADE,
@@ -186,16 +189,10 @@ class Db(object):
                         rate FLOAT,
                         paid FLOAT,
                         rsvgroup TEXT,
+                        roomNo TEXT,
+                        roomType INT,
                         notes TEXT,
                         registerDate DATE
-               );"""
-        cursor.execute(query)
-
-        query = """CREATE TABLE IF NOT EXISTS rsvRooms(
-                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                        rsvID INT REFERENCES reservations(rsvID) ON DELETE CASCADE,
-                        roomType INT,
-                        roomsAmount INT
                );"""
         cursor.execute(query)
 
@@ -310,11 +307,12 @@ class Db(object):
             values.append(value)
         return [query, values]
 
-    def insertRsvRoomID(self, rsvID, roomNo, cursor):
+    def updateRsvRoomID(self, rsvID, roomNo, cursor):
         """Insert data on rsvRoomsIDs."""
-        columns = ["rsvID", "room"]
-        query = self.insertQuery("rsvRoomsIDs", [rsvID, roomNo], columns)
-        cursor.execute(query[0], query[1])
+        query = "UPDATE reservations SET roomNo = ? WHERE rsvId = ?;"
+        print("updating ", [roomNo])
+        cursor.execute(query, [roomNo, rsvID])
+        print("updating")
 
     def getTableItems(self, table, cursor):
         """Return all items from table."""
@@ -433,18 +431,70 @@ class Db(object):
         return cursor.fetchall()
 
     def selectReservation(self, rsvID, cursor):
-        """Return all data of a reservation."""
-        rsvID = [rsvID]
+        """Return all data of a reservation.
+
+        Input: Accepts a reservation ID as a value or as
+                the first value of a tuple or list
+
+        Output: Returns a tuple with all the data of a reservation.
+        """
+        print("__________________________")
+        print("||")
+        print("selectReservation")
+        print("||")
+        print("HI, I should give you a reservation data")
+        print("You passed an rsvID with a value of: ", rsvID)
+        if type(rsvID) is tuple:
+            print("The value you passed was confirmed as a tuple.")
+            rsvID = [rsvID[0]]
+            print("The value was converted to: ", rsvID)
+        else:
+            print("The value you passed was confirmed as not a tuple.")
+            rsvID = [rsvID]
+            print("The value was converted to: ", rsvID)
         query = """SELECT * FROM reservations WHERE rsvID= ?;"""
         cursor.execute(query, rsvID)
         items = cursor.fetchall()[0]
+        print("Returning the following:")
+        print(items)
+        print("__________________________")
 
         return items
 
-    def selectReservationRooms(self, rsvID, cursor):
-        """Return the rooms occupied by a reservation."""
-        rsvID = [rsvID]
-        query = """SELECT * FROM rsvRooms WHERE rsvID= ?"""
+    def selectReservationRoom(self, rsvID, cursor):
+        """Return the room occupied by a reservation.
+
+        Input: Accepts a reservation ID as a value or as
+                the first value of a tuple or list
+
+        Output: Returns a list with a tuple inside [(roomNo, roomType)]
+        """
+        print("__________________________")
+        print("||")
+        print("selectReservationRoom")
+        print("||")
+        print("HI, I should give you a reservation number")
+        print("You passed an rsvID with a value of: ", rsvID)
+        if type(rsvID) is tuple:
+            print("The value you passed was confirmed as a tuple.")
+            rsvID = [rsvID[0]]
+            print("The value was converted to: ", rsvID)
+        else:
+            print("The value you passed was confirmed as not a tuple.")
+            rsvID = [rsvID]
+            print("The value was converted to: ", rsvID)
+        query = """SELECT roomNo, roomType FROM reservations WHERE rsvID= ?"""
+        cursor.execute(query, rsvID)
+        items = cursor.fetchall()
+
+        print("I'm now returning you the value: ", items)
+        print("__________________________")
+        return items
+
+    def selectReservationRoomType(self, rsvID, cursor):
+        """Return the room occupied by a reservation."""
+        rsvID = [rsvID[0]]
+        query = """SELECT roomType FROM reservations WHERE rsvID= ?"""
         cursor.execute(query, rsvID)
         items = cursor.fetchall()
 
@@ -518,6 +568,9 @@ class Db(object):
 
     def getReservation(self, rsvID, cursor):
         """Return reservation data for rsvID."""
+        print("||")
+        print("db/getReservation")
+        print("||")
         return self.selectReservation(rsvID, cursor)
 
     def getReservationExtras(self, rsvID, cursor):
@@ -540,9 +593,13 @@ class Db(object):
         """Return Non-Cancelled reservations occupying a room for the passed day."""
         return self.selectReservationsForDay(date, cursor)
 
-    def getReservationRooms(self, rsvID, cursor):
+    def getReservationRoom(self, rsvID, cursor):
         """Return the rooms occupied by a reservation."""
-        return self.selectReservationRooms(rsvID, cursor)
+        return self.selectReservationRoom(rsvID, cursor)
+
+    def getReservationRoomType(self, rsvID, cursor):
+        """Return the rooms occupied by a reservation."""
+        return self.selectReservationRoomType(rsvID, cursor)
 
     def getFreeRoomsForDate(self, date, cursor):
         """Return a list of available room slots by type.
@@ -556,7 +613,7 @@ class Db(object):
         for roomType in range(1, roomTypes):
             rooms[roomType] = self.getRoomsByType(roomType, cursor)
         for rsv in rsvs:
-            for room in self.getReservationRooms(rsv[0], cursor):
+            for room in self.getReservationRoom(rsv[0], cursor):
                 rooms[room[2]] -= room[3]
         return rooms
 
@@ -612,8 +669,8 @@ class Db(object):
         rsvs = self.getReservationsForDay(date, cursor)
         roomGroups = self.getRoomsInRoomGroups(cursor)
         for rsv in rsvs:
-            for room in self.getReservationRooms(rsv[0], cursor):
-                roomGroups[room[2]] -= room[3]
+            for room in self.getReservationRoom(rsv[0], cursor):
+                roomGroups[room[1]] -= 0 if room[0] is None else 1
         return roomGroups
 
     def getRoomGroupOccupancyForPeriod(self, dateIn, dateOut, cursor):
@@ -655,7 +712,7 @@ class Db(object):
     def selectRoomOfTypeInGroup(self, roomType, roomGroup, cursor):
         """If available return a roomNo of a room in roomGroup of roomType."""
         query = """SELECT `roomNo` FROM rooms WHERE roomGroup = ? AND typeID = ? AND statusID != 2 OR (roomGroup = ? AND typeID = ? AND statusID != 3);"""
-        cursor.execute(query, [roomGroup, roomType, roomGroup, roomType])
+        cursor.execute(query, [roomGroup, roomType[0], roomGroup, roomType[0]])
         item = cursor.fetchall()
         return item
 
@@ -911,8 +968,8 @@ class dummyDb(object):
         """Insert reservation data in database."""
         columns = [
             "guestID", "statusID", "userID", "companyID", "adults", "minors",
-            "dateIn", "dateOut", "rate", "paid", "rsvgroup", "notes",
-            "registerDate"
+            "dateIn", "dateOut", "rate", "paid", "rsvgroup", "roomNo", "roomType",
+            "notes", "registerDate"
             ]
         query = self.insertQuery("reservations", data, columns)
         cursor.execute(query[0], query[1])
@@ -935,8 +992,8 @@ class dummyDb(object):
 
     def newRsvRoom(self, cursor, data):
         """Insert reservation rooms data in database."""
-        columns = ["rsvID", "roomType", "roomsAmount"]
-        query = self.insertQuery("rsvRooms", data, columns)
+        columns = ["roomType"]
+        query = self.insertQuery("reservations", data, columns)
         cursor.execute(query[0], query[1])
 
     def newRsvParking(self, cursor, data):
@@ -1053,7 +1110,8 @@ class dummyDb(object):
         # now we will create the reservations
         for i in range(400):
             # first we set a registry date.
-            day = datetime.datetime(2018, 1, 1)
+            today = datetime.datetime.today()
+            day = today - datetime.timedelta(days=30)
             date = generator.randomDate(day)
             # then we randomly create or not a company.
             companyID = None
@@ -1124,32 +1182,36 @@ class dummyDb(object):
 
             # Now we create the reservation.
             reservationData = generator.dummyRsvData(date)
-            reservationData[0][0] = guestID
-            reservationData[0][1] = 0
-            reservationData[0][2] = 0
-            if companyID:
-                reservationData[0][3] = companyID
-            reservationData[0].append(date)
-            rsvID = self.newReservation(cursor, reservationData[0])
 
-            for room in reservationData[1]:
-                room[0] = rsvID
-                self.newRsvRoom(cursor, room)
+            # We are going to create multiple reservations for group reservations, so for
+            # them to have the randomly generated room data we create them individually and
+            # assign them a room type from the list, rsvRoomNo is the iterator for that list.
+            rsvRoomNo = 0
+            for room in range(len(reservationData[1])):
+                reservationData[0][0] = guestID
+                reservationData[0][1] = 0
+                reservationData[0][2] = 0
+                if companyID:
+                    reservationData[0][3] = companyID
+                reservationData[0].append(date)
+                reservationData[0][12] = reservationData[2][rsvRoomNo]
+                rsvID = self.newReservation(cursor, reservationData[0])
 
-            if reservationData[2]:
-                for otherGuest in reservationData[2]:
-                    otherGuest[0] = rsvID
-                    self.newRsvOGuest(cursor, otherGuest)
+                if reservationData[3]:
+                    for otherGuest in reservationData[3]:
+                        otherGuest[0] = rsvID
+                        self.newRsvOGuest(cursor, otherGuest)
 
-            if reservationData[3]:
-                for extra in reservationData[3]:
-                    extras = (rsvID, extra)
-                    self.newRsvExtra(cursor, extras)
+                if reservationData[4]:
+                    for extra in reservationData[4]:
+                        extras = (rsvID, extra)
+                        self.newRsvExtra(cursor, extras)
 
-            if reservationData[4]:
-                for parking in reservationData[4]:
-                    parking[0] = rsvID
-                    self.newRsvParking(cursor, parking)
+                if reservationData[5]:
+                    for parking in reservationData[5]:
+                        parking[0] = rsvID
+                        self.newRsvParking(cursor, parking)
+                rsvRoomNo += 1
 
         self.endConnection(connection)
 
@@ -1621,11 +1683,12 @@ class dummyGenerator(object):
 
         # rooms = [(number of rooms, room type),]
         if adults + minors > 5:
-            rooms = [[None, random.randint(1, 6), 1],
-                     [None, random.randint(1, 6), 1]]
+            rooms = [random.randint(1, 6)]
+            roomTypes = [random.randint(1, 6) for x in range(len(rooms))]
             group = self.dummyGroup()
         else:
-            rooms = [[None, random.randint(1, 6), 1]]
+            roomTypes = [random.randint(1, 6)]
+            rooms = [random.randint(1, 6)]
             group = None
 
         dates = self.dummyDates(start)
@@ -1661,6 +1724,7 @@ class dummyGenerator(object):
         else:
             note = None
 
+        # TODO: The other guest list must be an array with a list per room on group
         if adults + minors > 1:
             otherGuests = []
             for i in range((adults + minors) - 1):
@@ -1682,11 +1746,13 @@ class dummyGenerator(object):
         else:
             parking = None
 
+        roomNo = None
+        roomType = None
         return [[
             guestID, statusID, userID, companyID, adults, minors,
             dateIn.date(),
-            dateOut.date(), rate, paid, group, note
-            ], rooms, otherGuests, extras, parking]
+            dateOut.date(), rate, paid, group, roomNo, roomType, note
+            ], rooms, roomTypes, otherGuests, extras, parking]
 
 
 # db = Db()
