@@ -215,7 +215,8 @@ class SuperCheck(QWidget):
                 40, 40, Qt.KeepAspectRatio)
             notesIcon = QLabel()
             notesIcon.setPixmap(pixmap)
-            self.setToolTip(str(Note))
+            noteText = "<html><head/><body><p>" + Note + "</p></body></html>"
+            notesIcon.setToolTip(noteText)
         else:
             pixmap = QPixmap().scaled(40, 40, Qt.KeepAspectRatio)
             notesIcon = QLabel()
