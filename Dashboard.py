@@ -4,6 +4,20 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from colorama import Fore, Style
 import datetime
+import sys
+import os
+
+
+# Disable
+def blockPrint():
+    """Disable printing to terminal."""
+    sys.stdout = open(os.devnull, 'w')
+
+
+# Restore
+def enablePrint():
+    """Enable printing to terminal."""
+    sys.stdout = sys.__stdout__
 
 
 class DashScroll(QWidget):
@@ -125,14 +139,29 @@ class DashList(QWidget):
 
     def fillUi(self):
         """Add all items in the items list to the layout."""
+        roomRow = []
+        counter = 0
+        rooms = len(self.items)
+        uiItem = None
+        rowLen = 3
         for data in self.items:
             if data[0] == 1:
-                uiItem = DashRoomItem(data[1], self)
+                if len(roomRow) <= rowLen:
+                    roomRow.append(DashRoomItem(data[1], self))
+                    counter += 1
+                if len(roomRow) == rowLen or counter == rooms:
+                    uiItem = DashRoomRow(roomRow, rowLen, self)
             elif data[0] == 2:
                 uiItem = DashCheckInItem(data[1], self)
             elif data[0] == 3:
                 uiItem = DashCheckOutItem(data[1], self)
-            self.layout.addWidget(uiItem)
+            if data[0] == 1:
+                if uiItem is not None:
+                    self.layout.addWidget(uiItem)
+                    roomRow = []
+                    uiItem = None
+            else:
+                self.layout.addWidget(uiItem)
         self.layout.addStretch()
 
     def updateUi(self):
@@ -325,13 +354,13 @@ class DashRoomItem(QWidget):
         self.setFixedHeight(75)
         self.setFixedWidth(75)
 
-        self.setToolTip(str(self.data[2]))
+        self.setToolTip(str(self.data[0]))
 
     def initUi(self):
         """UI setup."""
         layout = QVBoxLayout()
 
-        print(self.data)
+        # print(self.data)
         roomNo = QLabel(self.data[0])
 
         roomNo.setAlignment(Qt.AlignCenter)
@@ -352,3 +381,40 @@ class DashRoomItem(QWidget):
         p = self.palette()
         p.setColor(self.backgroundRole(), Qt.green)
         self.setPalette(p)
+
+
+class DashRoomRow(QWidget):
+    """Container to organize DashRoomItems."""
+
+    def __init__(self, items, rowLen, parent):
+        """Init."""
+        super().__init__(parent)
+
+        self.items = items
+        self.rowLen = rowLen
+
+        self.initUi()
+
+    def initUi(self):
+        """UI setup."""
+        layout = QHBoxLayout()
+
+        for item in self.items:
+            layout.addWidget(item)
+
+        if len(self.items) != self.rowLen:
+            width = self.items[0].width()
+            height = self.items[0].height()
+            for item in range(self.rowLen - len(self.items)):
+                spacer = QWidget(self)
+                spacer.setFixedSize(width, height)
+                layout.addWidget(spacer)
+
+        self.setLayout(layout)
+
+    # def paintEvent(self, event):
+    #     """Set window background color."""
+    #     self.setAutoFillBackground(True)
+    #     p = self.palette()
+    #     p.setColor(self.backgroundRole(), Qt.blue)
+    #     self.setPalette(p)
