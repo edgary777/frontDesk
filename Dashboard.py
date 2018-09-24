@@ -182,21 +182,29 @@ class SuperCheck(QWidget):
         """Return a layout with the adults and minors icon and number."""
         innerLayout = QHBoxLayout()
 
-        pixmap = QPixmap("Resources/ac.png").scaled(size, size,
+        innerLayout.addStretch()
+
+        pixmapAdult = QPixmap("Resources/person.png").scaled(size, size,
                                                     Qt.KeepAspectRatio)
         adultIcon = QLabel()
-        adultIcon.setPixmap(pixmap)
+        adultIcon.setPixmap(pixmapAdult)
         innerLayout.addWidget(adultIcon)
         adultLabel = QLabel(str(adults))
         innerLayout.addWidget(adultLabel)
 
-        pixmap = QPixmap("Resources/ac.png").scaled(size, size,
+        sizeMinor = round(size * 0.7)
+
+        pixmapMinor = QPixmap("Resources/person.png").scaled(sizeMinor, sizeMinor,
                                                     Qt.KeepAspectRatio)
         minorIcon = QLabel()
-        minorIcon.setPixmap(pixmap)
+        minorIcon.setPixmap(pixmapMinor)
         innerLayout.addWidget(minorIcon)
         minorLabel = QLabel(str(minors))
         innerLayout.addWidget(minorLabel)
+
+        innerLayout.addStretch()
+
+        innerLayout.setAlignment(Qt.AlignBottom)
 
         layout.addLayout(innerLayout, 0, place, 2, 1)
 
