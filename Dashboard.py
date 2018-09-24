@@ -146,14 +146,21 @@ class DashList(QWidget):
         rowLen = 3
         for data in self.items:
             if data[0] == 1:
+                self.parent().parent().parent().setMinimumHeight(300)
+                self.parent().parent().parent().setMaximumWidth(260)
+                self.parent().parent().parent().setMinimumWidth(260)
                 if len(roomRow) <= rowLen:
                     roomRow.append(DashRoomItem(data[1], self))
                     counter += 1
                 if len(roomRow) == rowLen or counter == rooms:
                     uiItem = DashRoomRow(roomRow, rowLen, self)
             elif data[0] == 2:
+                self.parent().parent().parent().setMaximumWidth(520)
+                self.parent().parent().parent().setMinimumWidth(400)
                 uiItem = DashCheckInItem(data[1], self)
             elif data[0] == 3:
+                self.parent().parent().parent().setMaximumWidth(520)
+                self.parent().parent().parent().setMinimumWidth(400)
                 uiItem = DashCheckOutItem(data[1], self)
             if data[0] == 1:
                 if uiItem is not None:
@@ -294,6 +301,13 @@ class DashCheckOutItem(SuperCheck):
 
         layout.addWidget(owedLabel, 1, 3, 2, 2)
 
+        layout.setColumnStretch(0, 1)
+        layout.setColumnStretch(1, 3)
+        layout.setColumnStretch(2, 1)
+        layout.setColumnStretch(3, 2)
+
+        layout.setColumnMinimumWidth(2, 50)
+
         self.setLayout(layout)
 
 
@@ -334,7 +348,7 @@ class DashCheckInItem(SuperCheck):
         layout.addWidget(QLabel(guestName), 0, 1, 2, 1)
         self.noteIcon(self.rsvData[14], 2, layout)
 
-        self.guestsIcon(10, self.rsvData[5], self.rsvData[6], 3, layout)
+        self.guestsIcon(20, self.rsvData[5], self.rsvData[6], 3, layout)
 
         din = datetime.datetime.strptime(self.rsvData[7], "%Y-%m-%d")
         dout = datetime.datetime.strptime(self.rsvData[8], "%Y-%m-%d")
@@ -342,9 +356,20 @@ class DashCheckInItem(SuperCheck):
         nights = abs((dout - din).days)
 
         if nights > 1:
-            layout.addWidget(QLabel(str(nights) + " Noches"), 2, 3, 2, 1)
+            nightsLabel = QLabel(str(nights) + " Noches")
+            nightsLabel.setAlignment(Qt.AlignCenter)
+            layout.addWidget(nightsLabel, 2, 3, 2, 1)
         else:
-            layout.addWidget(QLabel(str(nights) + " Noche"), 2, 3, 2, 1)
+            nightsLabel = QLabel(str(nights) + " Noche")
+            nightsLabel.setAlignment(Qt.AlignCenter)
+            layout.addWidget(nightsLabel, 2, 3, 2, 1)
+
+        layout.setColumnStretch(0, 1)
+        layout.setColumnStretch(1, 3)
+        layout.setColumnStretch(2, 1)
+        layout.setColumnStretch(3, 1)
+
+        layout.setColumnMinimumWidth(2, 50)
 
         self.setLayout(layout)
 
@@ -417,6 +442,10 @@ class DashRoomRow(QWidget):
         """UI setup."""
         layout = QHBoxLayout()
 
+        layout.setSpacing(5)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        layout.addStretch()
         for item in self.items:
             layout.addWidget(item)
 
@@ -428,6 +457,7 @@ class DashRoomRow(QWidget):
                 spacer.setFixedSize(width, height)
                 layout.addWidget(spacer)
 
+        layout.addStretch()
         self.setLayout(layout)
 
     # def paintEvent(self, event):

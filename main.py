@@ -122,5 +122,6 @@ atexit.register(db.endConnection, connection)
 
 app = QApplication(sys.argv)
 window = MainWindow(cursor)
+window.setMaximumWidth(1380)
 window.showMaximized()
 sys.exit(app.exec_())

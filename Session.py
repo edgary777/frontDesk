@@ -41,9 +41,9 @@ class Session(QWidget):
         dashLayout.addWidget(self.checkOut)
         dashLayout.addWidget(self.roomStatus)
 
-        dashLayout.setStretchFactor(self.checkIn, 3)
-        dashLayout.setStretchFactor(self.checkOut, 3)
-        dashLayout.setStretchFactor(self.roomStatus, 2)
+        dashLayout.setStretchFactor(self.checkIn, 2)
+        dashLayout.setStretchFactor(self.checkOut, 2)
+        dashLayout.setStretchFactor(self.roomStatus, 1)
 
         layout.addLayout(dashLayout)
         layout.addWidget(menubar)
