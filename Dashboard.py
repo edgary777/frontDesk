@@ -379,7 +379,16 @@ class DashRoomItem(QWidget):
         """Set window background color."""
         self.setAutoFillBackground(True)
         p = self.palette()
-        p.setColor(self.backgroundRole(), Qt.green)
+        if self.data[2] == 0:
+            p.setColor(self.backgroundRole(), Qt.green)
+        elif self.data[2] == 1:
+            p.setColor(self.backgroundRole(), Qt.cyan)
+        elif self.data[2] == 2:
+            p.setColor(self.backgroundRole(), Qt.lightGray)
+        if self.data[2] == 3:
+            p.setColor(self.backgroundRole(), Qt.red)
+
+
         self.setPalette(p)
 
 
