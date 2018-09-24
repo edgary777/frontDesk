@@ -1054,7 +1054,7 @@ class dummyDb(object):
             "userID", "typeID", "name", "password", "registerDate",
             "registeredBy"
             ])
-        # Now we populate the database with more dummy database
+        # Now we populate the database with more dummy data
         roomStatusDefs = [[0, "LIBRE", "EL CUARTO ESTA LIBRE"], [
             1, "EN LIMPIEZA", "EL CUARTO ESTA LIBRE Y SE ESTA LIMPIANDO"
             ], [2, "OCUPADO", "EL CUARTO ESTA OCUPADO"], [
@@ -1719,7 +1719,7 @@ class dummyGenerator(object):
         extras = random.sample(range(5), exNo)
         extras.sort()
 
-        if random.random() > 0.95:
+        if random.random() > 0.7:
             note = self.dummyNote()
         else:
             note = None
