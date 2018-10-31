@@ -2,6 +2,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from PyQt5.Qt import QPainter
 from colorama import Fore, Style
 import datetime
 import sys
@@ -39,7 +40,7 @@ class DashScroll(QWidget):
         layout.setSpacing(0)
         self.area = QScrollArea()
         self.area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
+        self.area.setFrameShape(QFrame.NoFrame)
         # This must be done so it can update dynamically
         self.area.setWidgetResizable(True)
 
@@ -69,6 +70,8 @@ class DashList(QWidget):
     def initUi(self):
         """Ui setup."""
         self.layout = QVBoxLayout()
+        self.layout.setSpacing(3)
+        self.layout.setContentsMargins(3, 3, 3, 3)
         self.setLayout(self.layout)
 
     def addItems(self, items):
@@ -177,6 +180,13 @@ class DashList(QWidget):
 
         self.fillUi()
 
+    def paintEvent(self, event):
+        """Set window background color."""
+        self.setAutoFillBackground(True)
+        p = self.palette()
+        p.setColor(self.backgroundRole(), Qt.white)
+        self.setPalette(p)
+
 
 class SuperCheck(QWidget):
     """Parent class for the check-in and check-out dashboard items."""
@@ -185,50 +195,40 @@ class SuperCheck(QWidget):
         """Init."""
         super().__init__(parent)
 
-    def guestsIcon(self, size, adults, minors, place, layout):
-        """Return a layout with the adults and minors icon and number."""
-        innerLayout = QHBoxLayout()
+        self.mono = QFont()
+        self.mono.setStyleHint(QFont.Monospace)
+        self.mono.setFamily("Roboto Mono")
+        self.fontAwesome = QFont()
+        self.fontAwesome.setFamily("FontAwesome")
 
-        innerLayout.addStretch()
+        self.roomNoStyle = """font-size: 20px;
+                              font-weight: 900;
+                              font-family: 'Roboto Mono';
+                           """
 
-        pixmapAdult = QPixmap("Resources/person.png").scaled(size, size,
-                                                    Qt.KeepAspectRatio)
-        adultIcon = QLabel()
-        adultIcon.setPixmap(pixmapAdult)
-        innerLayout.addWidget(adultIcon)
-        adultLabel = QLabel(str(adults))
-        innerLayout.addWidget(adultLabel)
+        self.nameStyle = """font-size: 16px;
+                            font-weight: bold;
+                         """
 
-        sizeMinor = round(size * 0.7)
+        self.groupStyle = """font-size: 16px;
+                             font-weight: Regular;
+                          """
 
-        pixmapMinor = QPixmap("Resources/person.png").scaled(sizeMinor, sizeMinor,
-                                                    Qt.KeepAspectRatio)
-        minorIcon = QLabel()
-        minorIcon.setPixmap(pixmapMinor)
-        innerLayout.addWidget(minorIcon)
-        minorLabel = QLabel(str(minors))
-        innerLayout.addWidget(minorLabel)
+        # self.setStyleSheet("border: 3px solid black")
 
-        innerLayout.addStretch()
-
-        innerLayout.setAlignment(Qt.AlignBottom)
-
-        layout.addLayout(innerLayout, 0, place, 2, 1)
+        self.maxNameWidth = 185
 
     def noteIcon(self, Note, place, layout):
         """Return notes icon if status is True."""
+        size = 40
         if Note is not None:
             pixmap = QPixmap("Resources/note.png").scaled(
-                40, 40, Qt.KeepAspectRatio)
+                size, size, Qt.KeepAspectRatio)
             notesIcon = QLabel()
             notesIcon.setPixmap(pixmap)
             noteText = "<html><head/><body><p>" + Note + "</p></body></html>"
             notesIcon.setToolTip(noteText)
-        else:
-            pixmap = QPixmap().scaled(40, 40, Qt.KeepAspectRatio)
-            notesIcon = QLabel()
-            notesIcon.setPixmap(pixmap)
-        layout.addWidget(notesIcon, 0, place, 3, 1)
+            layout.addWidget(notesIcon, 0, place, 4, 1, Qt.AlignCenter)
 
     def extrasIcons(self, extras):
         """Return a layout with the icons of the extras passed."""
@@ -245,7 +245,7 @@ class SuperCheck(QWidget):
         """Set window background color."""
         self.setAutoFillBackground(True)
         p = self.palette()
-        p.setColor(self.backgroundRole(), Qt.green)
+        p.setColor(self.backgroundRole(), Qt.lightGray)
         self.setPalette(p)
 
 
@@ -269,21 +269,33 @@ class DashCheckOutItem(SuperCheck):
     def initUi(self):
         """UI setup."""
         layout = QGridLayout()
+        layout.setContentsMargins(2, 2, 2, 2)
+        layout.setHorizontalSpacing(8)
 
         # This dict contains the position of the data we need to populate the ui.
         # RoomNo = 12, Status = 2
         # Group = 11, Nights = 7(dateIn) && 8 (dateOut)
-        layout.addWidget(QLabel(str(self.rsvData[12])), 1, 0, 2, 1)  # Room
+        roomNo = QLabel(str(self.rsvData[12]))
+        roomNo.setFont(self.mono)
+        roomNo.setStyleSheet(self.roomNoStyle)
+        layout.addWidget(roomNo, 0, 0, 4, 1, Qt.AlignCenter)  # Room
 
         groupName = "" if self.rsvData[11] is None else self.rsvData[11]
-        layout.addWidget(QLabel(str(groupName)), 2, 2, 2, 1)  # Group
+        groupNameLabel = QLabel(str(groupName))
+        groupNameLabel.setStyleSheet(self.groupStyle)
+        groupNameLabel.setMaximumWidth(self.maxNameWidth)
+        layout.addWidget(groupNameLabel, 2, 1, 2, 1, Qt.AlignTop)  # Group
 
         if self.guestData[2] is not None:
             guestName = str(self.guestData[1]) + " " + str(self.guestData[2])
         else:
             guestName = str(self.guestData[1])
 
-        layout.addWidget(QLabel(guestName), 0, 1, 2, 1)
+        guestNameLabel = QLabel(guestName)
+        guestNameLabel.setStyleSheet(self.nameStyle)
+        guestNameLabel.setMaximumWidth(self.maxNameWidth)
+
+        layout.addWidget(guestNameLabel, 0, 1, 2, 1, Qt.AlignBottom)
         self.noteIcon(self.rsvData[14], 2, layout)
 
         din = datetime.datetime.strptime(self.rsvData[7], "%Y-%m-%d")
@@ -296,10 +308,16 @@ class DashCheckOutItem(SuperCheck):
         owed = (self.rsvData[9] * nights) - paid
 
         owedLabel = QLabel("$" + str(owed))
+        owedStyle = """QLabel {
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+        }"""
+        owedLabel.setStyleSheet(owedStyle)
 
         owedLabel.setAlignment(Qt.AlignCenter)
 
-        layout.addWidget(owedLabel, 1, 3, 2, 2)
+        layout.addWidget(owedLabel, 0, 3, 4, 2)
 
         layout.setColumnStretch(0, 1)
         layout.setColumnStretch(1, 3)
@@ -326,52 +344,128 @@ class DashCheckInItem(SuperCheck):
 
         self.setFixedHeight(60)
 
-        self.setToolTip(str(self.rsvData[0]))
+        self.setToolTip(str(self.rsvData[0]))  # Reservation Number
 
     def initUi(self):
         """UI setup."""
         layout = QGridLayout()
+        layout.setContentsMargins(3, 3, 3, 3)
+        layout.setHorizontalSpacing(5)
 
         # This dict contains the position of the data we need to populate the ui.
         # RoomNo = 12, Status = 2
         # Group = 11, Nights = 7(dateIn) && 8 (dateOut)
-        layout.addWidget(QLabel(str(self.rsvData[12])), 1, 0, 2, 1)  # Room
+        roomNo = QLabel(str(self.rsvData[12]))
+        roomNo.setFont(self.mono)
+        roomNo.setStyleSheet(self.roomNoStyle)
+        layout.addWidget(roomNo, 0, 0, 4, 1, Qt.AlignCenter)  # Room
 
         groupName = "" if self.rsvData[11] is None else self.rsvData[11]
-        layout.addWidget(QLabel(str(groupName)), 2, 1, 2, 1)  # Group
+        groupNameLabel = QLabel(str(groupName))
+        groupNameLabel.setStyleSheet(self.groupStyle)
+        groupNameLabel.setMaximumHeight(16)
+        groupNameLabel.setWordWrap(True)
+        layout.addWidget(groupNameLabel, 2, 1, 2, 1, Qt.AlignTop)  # Group
 
         if self.guestData[2] is not None:
             guestName = str(self.guestData[1]) + " " + str(self.guestData[2])
         else:
             guestName = str(self.guestData[1])
 
-        layout.addWidget(QLabel(guestName), 0, 1, 2, 1)
+        guestNameLabel = QLabel(guestName)
+        guestNameLabel.setMaximumHeight(16)
+        guestNameLabel.setStyleSheet(self.nameStyle)
+        guestNameLabel.setWordWrap(True)
+        layout.addWidget(guestNameLabel, 0, 1, 2, 1, Qt.AlignBottom)
+
         self.noteIcon(self.rsvData[14], 2, layout)
 
-        self.guestsIcon(20, self.rsvData[5], self.rsvData[6], 3, layout)
+        self.guestsIcon(self.rsvData[5], self.rsvData[6], 3, layout)
 
         din = datetime.datetime.strptime(self.rsvData[7], "%Y-%m-%d")
         dout = datetime.datetime.strptime(self.rsvData[8], "%Y-%m-%d")
+
+        nightsStyle = """QLabel {
+            font-size: 15px;
+            font-weight: 900;
+            text-align: center;
+        }"""
 
         nights = abs((dout - din).days)
 
         if nights > 1:
             nightsLabel = QLabel(str(nights) + " Noches")
+            nightsLabel.setStyleSheet(nightsStyle)
             nightsLabel.setAlignment(Qt.AlignCenter)
             layout.addWidget(nightsLabel, 2, 3, 2, 1)
         else:
             nightsLabel = QLabel(str(nights) + " Noche")
+            nightsLabel.setStyleSheet(nightsStyle)
             nightsLabel.setAlignment(Qt.AlignCenter)
             layout.addWidget(nightsLabel, 2, 3, 2, 1)
 
-        layout.setColumnStretch(0, 1)
-        layout.setColumnStretch(1, 3)
-        layout.setColumnStretch(2, 1)
-        layout.setColumnStretch(3, 1)
+        layout.setColumnMinimumWidth(2, 40)
+        layout.setColumnMinimumWidth(3, 75)
 
-        layout.setColumnMinimumWidth(2, 50)
+        layout.setColumnStretch(0, 2)
+        layout.setColumnStretch(1, 12)
+        layout.setColumnStretch(2, 4)
+        layout.setColumnStretch(3, 3)
 
         self.setLayout(layout)
+
+    def guestsIcon(self, adults, minors, place, layout):
+        """Return a layout with the adults and minors icon and number."""
+        adultsRich = """
+        <html>
+        <head/>
+        <body>
+            <p>
+                <span style='font-family: "Roboto"; font-size: 20px; font-weight: bold;'>
+                    <span style='font-size: 18px;'>
+                        \uf183
+                    </span>
+                    {}
+                </span>
+            </p>
+        </body>
+        </html>""".format(adults)
+
+        minorsRich = """
+        <html>
+        <head/>
+        <body>
+            <p>
+                <span style='font-family: "Roboto"; font-size: 20px; font-weight: bold;'>
+                    <span style='font-size: 13px;'>
+                        \u00A0\uf1ae
+                    </span>
+                    {}
+                </span>
+            </p>
+        </body>
+        </html>""".format(adults)
+
+        Adults = QLabel(adultsRich)
+        Adults.setContentsMargins(0, 0, 0, 0)
+        Adults.setAlignment(Qt.AlignCenter)
+        Adults.setToolTip("Adultos")
+
+        Minors = QLabel(minorsRich)
+        Minors.setContentsMargins(0, 0, 0, 0)
+        Minors.setAlignment(Qt.AlignCenter)
+        Minors.setToolTip("Menores")
+
+        internalLayout = QHBoxLayout()
+        internalLayout.addStretch()
+        internalLayout.addWidget(Adults)
+        internalLayout.addWidget(Minors)
+        internalLayout.addStretch()
+
+        internalLayout.setContentsMargins(0, 0, 0, 0)
+        internalLayout.setAlignment(Qt.AlignCenter)
+
+        layout.addLayout(internalLayout, 0, place, 2, 1)
 
 
 class DashRoomItem(QWidget):
@@ -401,6 +495,7 @@ class DashRoomItem(QWidget):
         styleSheet = """
         QLabel {
             font-size: 18px;
+            font-weight: bold;
         }"""
 
         roomNo.setStyleSheet(styleSheet)
@@ -414,14 +509,13 @@ class DashRoomItem(QWidget):
         self.setAutoFillBackground(True)
         p = self.palette()
         if self.data[2] == 0:
-            p.setColor(self.backgroundRole(), Qt.green)
+            p.setColor(self.backgroundRole(), Qt.green)  # Libre
         elif self.data[2] == 1:
-            p.setColor(self.backgroundRole(), Qt.cyan)
+            p.setColor(self.backgroundRole(), Qt.cyan)  # En Limpieza
         elif self.data[2] == 2:
-            p.setColor(self.backgroundRole(), Qt.lightGray)
+            p.setColor(self.backgroundRole(), Qt.red)  # Ocupado
         if self.data[2] == 3:
-            p.setColor(self.backgroundRole(), Qt.red)
-
+            p.setColor(self.backgroundRole(), Qt.lightGray)  # Fuera de servicio
 
         self.setPalette(p)
 
@@ -442,7 +536,7 @@ class DashRoomRow(QWidget):
         """UI setup."""
         layout = QHBoxLayout()
 
-        layout.setSpacing(5)
+        layout.setSpacing(3)
         layout.setContentsMargins(0, 0, 0, 0)
 
         layout.addStretch()
