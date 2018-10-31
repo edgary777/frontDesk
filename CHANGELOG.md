@@ -4,15 +4,32 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## V0.6.0
 ### Added
+- Added color to the debug prints to be able to know what's going on.
+- Added a way to turn off all prints so they only show when debugging.
+- Added a way to write the error logs to a file after freezing.
+- Added a way to create new dummy data for debugging every time the program starts.
+- Added the name of the current version to the window title.
 
 ### Removed
+- Removed the need to use data objects for the data to be passed around.
+    ~ Removed People.py
+    ~ Removed Reservation.py
+    ~ Removed Room.py
+    ~ Removed DataItems.py
+    ~ Removed person.png
 
 ### Changed
 - Changed the SideBar to a MenuBar so the layout makes more sense.
-
-### Fixed
+- Changed the way data is passed around after it is returned by the database.
+- Changed the dashboard items classes to make them easier to debug.
+- Changed the way the dashboard items are created.
+- Changed the way the dashboard items get and use their information.
+- Changed the way the dashboard room items layout, now it will be a masonry like layout.
+- The dummy database now takes the date it is created on as a base for the reservations dates.
+- Changed the overall visual style of the dashboard.
+- Changed some behaviors of the main window layout.
 
 ## V0.5.0
 ### Changed
