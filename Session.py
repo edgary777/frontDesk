@@ -25,6 +25,7 @@ class Session(QWidget):
     def initUi(self):
         """Ui Setup."""
         layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
 
         btnList = ["Reservación", "Check-In", "Check-Out", "Configuración"]
         menubar = MenuBar.MenuBar(btnList, self)
@@ -36,9 +37,13 @@ class Session(QWidget):
         self.updateAll()
 
         dashLayout = QHBoxLayout()
+        dashLayout.setContentsMargins(10, 0, 10, 0)
+        dashLayout.setSpacing(5)
 
         dashLayout.addWidget(self.checkIn)
+        dashLayout.addStretch()
         dashLayout.addWidget(self.checkOut)
+        dashLayout.addStretch()
         dashLayout.addWidget(self.roomStatus)
 
         dashLayout.setStretchFactor(self.checkIn, 2)
