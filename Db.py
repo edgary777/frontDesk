@@ -1108,7 +1108,7 @@ class dummyDb(object):
             self.newRsvExtraDef(cursor, extra)
 
         # now we will create the reservations
-        for i in range(400):
+        for i in range(1000):
             # first we set a registry date.
             today = datetime.datetime.today()
             day = today - datetime.timedelta(days=30)
@@ -1235,7 +1235,7 @@ class dummyGenerator(object):
             "Gabriela", "Ines", "Juan", "Jose", "Jesus", "Jimena", "Jorge",
             "Maria", "Maricela", "Mario", "Miguel", "Antonieta", "Luis",
             "Luisa", "Regina", "Renata", "Alejandro", "Alejandra", "Francisco",
-            "Salvador", "Ignacio", "Walter", "Arturo", "Hector"
+            "Salvador", "Ignacio", "Walter", "Arturo", "Hector", "Cristina"
             ]
         if random.random() > 0.8:
             return random.sample(names, 1)[0] + " " + random.sample(names,
@@ -1250,7 +1250,7 @@ class dummyGenerator(object):
             "Solis", "Saravia", "Garcia", "Martinez", "Vizcarra", "Silerio",
             "Treviño", "Mesa", "Fernandez", "Ramos", "Russek", "Vargas",
             "Alvarado", "Saltijeral", "Rodriguez", "Barrera", "Hernandez",
-            "Felix", "Diaz"
+            "Felix", "Diaz", "Belausteguigoitia", "Giacoman"
             ]
 
         return random.sample(lastNames, 1)[0] + " " + random.sample(
@@ -1263,7 +1263,7 @@ class dummyGenerator(object):
             "Solis", "Saravia", "Garcia", "Martinez", "Vizcarra", "Silerio",
             "Treviño", "Mesa", "Fernandez", "Ramos", "Russek", "Vargas",
             "Alvarado", "Saltijeral", "Rodriguez", "Barrera", "Hernandez",
-            "Felix", "Diaz"
+            "Felix", "Diaz", "Belausteguigoitia", "Giacoman"
             ]
         activity = [
             "Boda", "Reunion", "Familia", "Fiesta", "Tertulia",
@@ -1313,7 +1313,7 @@ class dummyGenerator(object):
             "Solis", "Saravia", "Garcia", "Martinez", "Vizcarra", "Silerio",
             "Treviño", "Mesa", "Fernandez", "Ramos", "Russek", "Vargas",
             "Alvarado", "Saltijeral", "Rodriguez", "Barrera", "Hernandez",
-            "Felix", "Diaz"
+            "Felix", "Diaz", "Belausteguigoitia", "Giacoman"
             ]
         activity = [
             "Boda", "Reunion", "Familia", "Fiesta", "Tertulia",
@@ -1529,7 +1529,7 @@ class dummyGenerator(object):
         characters = [
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
             "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
+            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Ñ"
             ]
         # stats = ["LIBRE", "EN LIMPIEZA", "OCUPADO", "FUERA DE SERVICIO"]
         # For testing, 5% of rooms will be out of service.
@@ -1553,7 +1553,7 @@ class dummyGenerator(object):
         else:
             note = None
 
-        numero = random.sample(characters, 5)[:]
+        numero = random.sample(characters, 3)[:]
         numero = "".join(numero)
 
         roomGroup = random.randint(1, 10)
@@ -1674,7 +1674,7 @@ class dummyGenerator(object):
 
     def dummyRsvData(self, start):
         """Return random reservation data."""
-        if random.random() > 0.8:
+        if random.random() > 0.7:
             adults = random.randint(1, 10)
             minors = random.randint(0, 5)
         else:
@@ -1719,7 +1719,7 @@ class dummyGenerator(object):
         extras = random.sample(range(5), exNo)
         extras.sort()
 
-        if random.random() > 0.7:
+        if random.random() > 0.65:
             note = self.dummyNote()
         else:
             note = None
