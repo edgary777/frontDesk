@@ -43,6 +43,7 @@ class MainWindow(QWidget):
 
         self.session = None
         self.cursor = cursor
+        self.setWindowTitle("V0.6.0")
 
         self.initUi()
         self.setStyleSheet("font-family: 'Roboto'; color: #333333;")
