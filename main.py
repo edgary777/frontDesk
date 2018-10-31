@@ -22,7 +22,7 @@ filePath = "/".join(filePath)
 
 if os.path.dirname(sys.executable) == filePath:
 
-    logging.basicConfig(filename=os.path.dirname(sys.executable) + '/tmp/myapp.log',
+    logging.basicConfig(filmoveename=os.path.dirname(sys.executable) + '/errors.log',
                         level=logging.DEBUG,
                         format='%(asctime)s %(levelname)s %(name)s %(message)s')
     logger = logging.getLogger('mylogger')
@@ -45,6 +45,7 @@ class MainWindow(QWidget):
         self.cursor = cursor
 
         self.initUi()
+        self.setStyleSheet("font-family: 'Roboto'; color: #333333;")
 
     def initUi(self):
         """Ui Setup."""
@@ -122,6 +123,7 @@ atexit.register(db.endConnection, connection)
 
 app = QApplication(sys.argv)
 window = MainWindow(cursor)
-window.setMaximumWidth(1380)
+# Having a fixed size for the windows makes it unable to be maximized
+# window.setMaximumWidth(1380)
 window.showMaximized()
 sys.exit(app.exec_())
