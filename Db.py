@@ -1,5 +1,4 @@
 """Database communication implementation."""
-
 import sqlite3
 import datetime
 import random
@@ -310,9 +309,7 @@ class Db(object):
     def updateRsvRoomID(self, rsvID, roomNo, cursor):
         """Insert data on rsvRoomsIDs."""
         query = "UPDATE reservations SET roomNo = ? WHERE rsvId = ?;"
-        print("updating ", [roomNo])
         cursor.execute(query, [roomNo, rsvID])
-        print("updating")
 
     def getTableItems(self, table, cursor):
         """Return all items from table."""
@@ -438,26 +435,13 @@ class Db(object):
 
         Output: Returns a tuple with all the data of a reservation.
         """
-        print("__________________________")
-        print("||")
-        print("selectReservation")
-        print("||")
-        print("HI, I should give you a reservation data")
-        print("You passed an rsvID with a value of: ", rsvID)
         if type(rsvID) is tuple:
-            print("The value you passed was confirmed as a tuple.")
             rsvID = [rsvID[0]]
-            print("The value was converted to: ", rsvID)
         else:
-            print("The value you passed was confirmed as not a tuple.")
             rsvID = [rsvID]
-            print("The value was converted to: ", rsvID)
         query = """SELECT * FROM reservations WHERE rsvID= ?;"""
         cursor.execute(query, rsvID)
         items = cursor.fetchall()[0]
-        print("Returning the following:")
-        print(items)
-        print("__________________________")
 
         return items
 
@@ -469,26 +453,14 @@ class Db(object):
 
         Output: Returns a list with a tuple inside [(roomNo, roomType)]
         """
-        print("__________________________")
-        print("||")
-        print("selectReservationRoom")
-        print("||")
-        print("HI, I should give you a reservation number")
-        print("You passed an rsvID with a value of: ", rsvID)
         if type(rsvID) is tuple:
-            print("The value you passed was confirmed as a tuple.")
             rsvID = [rsvID[0]]
-            print("The value was converted to: ", rsvID)
         else:
-            print("The value you passed was confirmed as not a tuple.")
             rsvID = [rsvID]
-            print("The value was converted to: ", rsvID)
         query = """SELECT roomNo, roomType FROM reservations WHERE rsvID= ?"""
         cursor.execute(query, rsvID)
         items = cursor.fetchall()
 
-        print("I'm now returning you the value: ", items)
-        print("__________________________")
         return items
 
     def selectReservationRoomType(self, rsvID, cursor):
@@ -568,9 +540,6 @@ class Db(object):
 
     def getReservation(self, rsvID, cursor):
         """Return reservation data for rsvID."""
-        print("||")
-        print("db/getReservation")
-        print("||")
         return self.selectReservation(rsvID, cursor)
 
     def getReservationExtras(self, rsvID, cursor):

@@ -2,23 +2,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from PyQt5.Qt import QPainter
-from colorama import Fore, Style
 import datetime
-import sys
-import os
-
-
-# Disable
-def blockPrint():
-    """Disable printing to terminal."""
-    sys.stdout = open(os.devnull, 'w')
-
-
-# Restore
-def enablePrint():
-    """Enable printing to terminal."""
-    sys.stdout = sys.__stdout__
 
 
 class DashScroll(QWidget):
@@ -91,29 +75,21 @@ class DashList(QWidget):
 
         Output: None
         """
-        print(Fore.RED)
-        print("DashList/addItem")
-        print(items)
         if items[0]:
             if items[0] == 1:
-                print("I got 1")
-                print(items)
                 for data in items[1]:
                     self.items.append([1, data])
             elif items[0] == 2:
-                print("I got 2")
-                print(items)
                 for data in items[1]:
                     self.items.append([2, data])
             elif items[0] == 3:
-                print(" I got 3")
-                print(items)
                 for data in items[1]:
                     self.items.append([3, data])
             else:
-                print("Invalid Value")
-                print(items)
-        print(Style.RESET_ALL)
+                # print("Invalid Value")
+                # print(items)
+                pass
+
         self.updateUi()
 
     def removeItem(self):
@@ -488,7 +464,6 @@ class DashRoomItem(QWidget):
         """UI setup."""
         layout = QVBoxLayout()
 
-        # print(self.data)
         roomNo = QLabel(self.data[0])
 
         roomNo.setAlignment(Qt.AlignCenter)

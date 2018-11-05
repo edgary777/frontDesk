@@ -50,7 +50,7 @@ class MenuBar(QWidget):
             # self.color is a list of rgb values, we must make it a CSV string
             color = ",".join(str(e) for e in colorRGB)
             label = str(i)
-            icon = "Resources\c-close.png"
+            icon = "Resources\\c-close.png"
             setattr(self, "btn" + str(x),
                     Buttons.MenuBarBtn(color, label, icon, self))
             btns.append(getattr(self, "btn" + str(x)))
