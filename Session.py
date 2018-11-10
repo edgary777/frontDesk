@@ -6,6 +6,7 @@ from PyQt5.QtGui import *
 import MenuBar
 from Dashboard import DashScroll
 import Manager
+import Db
 
 
 class Session(QWidget):
@@ -15,9 +16,32 @@ class Session(QWidget):
         """Init."""
         super().__init__(parent)
 
-        # user = [ID, NAME, TYPE[ADMIN=0, USER=1]]
+        # user = [ID, TYPE[ROOT=0, ADMIN=1, USER=2]]
+        self.parent = parent
         self.user = user
+
         self.cursor = cursor
+
+        self.db = Db.Db()
+
+        self.userData = self.db.getUserById(self.user[0], self.cursor)
+
+        self.username = self.userData[2]
+
+        if self.userData[1] == 0:
+            self.userType = " Root"
+        elif self.userData[1] == 1:
+            self.userType = " Admin"
+        elif self.userData[1] == 2:
+            self.userType = " Usuario"
+        else:
+            # Raise error because this data is wrong.
+            pass
+
+        title = "V0.6.0 - Usuario: {} - Privilegios: {}".format(
+            str(self.username), self.userType)
+
+        self.parent.setWindowTitle(title)
 
         self.initUi()
 

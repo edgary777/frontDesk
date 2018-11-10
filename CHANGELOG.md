@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Added
+
+### Removed
+
+### Modified
+
+## V0.7.0
+### Added
+- Added Login.py, it is a login window widget that starts the program.
+- Added ICG.py, it is an Initial Credentials Generator for the first time the program runs.
+- Added Dialogs, it is where the pop up dialogs code is found.
+- Added Validators.py, it contains functions to validate input data.
+
+### Modified
+- Modified main.py to prompt for the creation of a root and admin users when there are no registered users in the program (First time it runs.)
+- Modified main.py to show the login widget before showing the dashboard.
+- Modified Db.py to add functions to get data from the database.
+- Modified Session.py to get the user data and show it on the window name.
+- Modified dbVisualizer.py to show user data for testing.
+- Modified CHANGELOG.md to say 'Modified' instead of changed, also fixed a typo.
+
 ## V0.6.0
 ### Added
 - Added color to the debug prints to be able to know what's going on.
@@ -20,7 +42,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
     ~ Removed DataItems.py
     ~ Removed person.png
 
-### Changed
+### Modified
 - Changed the SideBar to a MenuBar so the layout makes more sense.
 - Changed the way data is passed around after it is returned by the database.
 - Changed the dashboard items classes to make them easier to debug.
@@ -32,8 +54,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Changed some behaviors of the main window layout.
 
 ## V0.5.0
-### Changed
-- Simplified the connections to the database. Now the same connection is used throghout
+### Modified
+- Simplified the connections to the database. Now the same connection is used throughout
     the lifetime of the program.
 
 ## V0.4.0
@@ -67,5 +89,5 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Changelog.md
 - main.py added and filled with the most basic PyQt5 empty window.
 
-### Changed
+### Modified
 -README.md was changed to show more information about the project.

@@ -127,10 +127,12 @@ class Db(object):
         query = """CREATE TABLE IF NOT EXISTS users(
                         userID INTEGER PRIMARY KEY AUTOINCREMENT,
                         typeID INT REFERENCES userTypesDefs(typeID),
+                        username VARCHAR,
                         name TEXT,
                         lastName TEXT,
                         notes VARCHAR,
                         password VARCHAR,
+                        email VARCHAR,
                         registerDate DATE,
                         registeredBy INT
                );"""
@@ -282,7 +284,7 @@ class Db(object):
 
         Return a parameterized query and the values for it.
         If you are not passing values for all the table columns
-            then you must also pass which columns you are passing.
+        then you must also pass which columns you are passing.
         """
         # Queries that get input from a user are dangerous.
         # Stay safe by parameterizing them.
@@ -457,7 +459,7 @@ class Db(object):
             rsvID = [rsvID[0]]
         else:
             rsvID = [rsvID]
-        query = """SELECT roomNo, roomType FROM reservations WHERE rsvID= ?"""
+        query = """SELECT roomNo, roomType FROM reservations WHERE rsvID= ?;"""
         cursor.execute(query, rsvID)
         items = cursor.fetchall()
 
@@ -466,7 +468,7 @@ class Db(object):
     def selectReservationRoomType(self, rsvID, cursor):
         """Return the room occupied by a reservation."""
         rsvID = [rsvID[0]]
-        query = """SELECT roomType FROM reservations WHERE rsvID= ?"""
+        query = """SELECT roomType FROM reservations WHERE rsvID= ?;"""
         cursor.execute(query, rsvID)
         items = cursor.fetchall()
 
@@ -475,7 +477,7 @@ class Db(object):
     def selectCheckIns(self, date, cursor):
         """Return Check-Ins for date."""
         date = [str(date)]
-        query = """SELECT `rsvId` FROM reservations WHERE dateIn= ?"""
+        query = """SELECT `rsvId` FROM reservations WHERE dateIn= ?;"""
         cursor.execute(query, date)
         items = cursor.fetchall()
 
@@ -484,7 +486,7 @@ class Db(object):
     def selectCheckOuts(self, date, cursor):
         """Return Check-Outs for date."""
         date = [str(date)]
-        query = """SELECT `rsvId` FROM reservations WHERE dateOut= ?"""
+        query = """SELECT `rsvId` FROM reservations WHERE dateOut= ?;"""
         cursor.execute(query, date)
         items = cursor.fetchall()
 
@@ -498,7 +500,7 @@ class Db(object):
         """
         date = datetime.datetime.today().date()
         date = [date, date]
-        query = """SELECT `rsvId` FROM reservations WHERE dateIn< ? and dateOut< ?"""
+        query = """SELECT `rsvId` FROM reservations WHERE dateIn< ? and dateOut< ?;"""
         cursor.execute(query, date)
         items = cursor.fetchall()
 
@@ -512,11 +514,157 @@ class Db(object):
         """
         date = datetime.datetime.today().date()
         date = [date, date]
-        query = """SELECT `rsvId` FROM reservations WHERE dateIn< ? and dateOut>= ?"""
+        query = """SELECT `rsvId` FROM reservations WHERE dateIn< ? and dateOut>= ?;"""
         cursor.execute(query, date)
         items = cursor.fetchall()
 
         return items
+
+    def selectTable(self, table, cursor):
+        """Return all items of a table."""
+        query = """SELECT * FROM '{}';""".format(table)
+        cursor.execute(query)
+        items = cursor.fetchall()
+
+        return items
+
+    def selectUsers(self, cursor):
+        """Return all users ID's."""
+        return self.selectQuery("users", "userID", cursor)
+
+    def selectUser(self, username, cursor):
+        """Return the data of the passed user.
+
+        Input:
+        - username
+        Output:
+        - Returns the user data if the username matches any on the database.
+        - Returns False if there's no match for the username.
+        """
+        username = [username]
+        query = """SELECT * FROM users WHERE username= ?;"""
+        cursor.execute(query, username)
+        items = cursor.fetchall()
+
+        if items != []:
+            return items[0]
+        else:
+            return False
+
+    def selectUserById(self, userID, cursor):
+        """Return the data of the passed user ID.
+
+        Input:
+        - user ID
+        Output:
+        - Returns the user data if the user ID matches any on the database.
+        - Returns False if there's no match for the user ID.
+        """
+        userID = [userID]
+        query = """SELECT * FROM users WHERE userID= ?;"""
+        cursor.execute(query, userID)
+        items = cursor.fetchall()
+
+        if items != []:
+            return items[0]
+        else:
+            return False
+
+    def selectUsernames(self, cursor):
+        """Return a list of all the usernames registered."""
+        query = """SELECT `username` FROM users;"""
+        cursor.execute(query)
+        items = cursor.fetchall()
+        usernames = []
+        for item in items:
+            usernames.append(str(item[0]))
+        return usernames
+
+    def verifyUsers(self, cursor):
+        """Return true if there are registered users, False if there aren't."""
+        if self.selectUsers(cursor):
+            return True
+        else:
+            return False
+
+    def verifyRoot(self, cursor):
+        """Verify if there are admin users.
+
+        Returns True if there are registered users of type Root.
+        Returns False if there are no registered users of type Root.
+        Returns 2 if there are no users at all.
+        """
+        if self.verifyUsers(cursor):
+            users = self.selectTable("users", cursor)
+            for user in users:
+                if user[1] == 0:
+                    return True
+            return False
+        else:
+            return 2
+
+    def verifyAdmin(self, cursor):
+        """Verify if there are admin users.
+
+        Returns True if there are registered users of type Admin.
+        Returns False if there are no registered users of type Admin.
+        Returns 2 if there are no users at all.
+        """
+        if self.verifyUsers(cursor):
+            users = self.selectTable("users", cursor)
+            for user in users:
+                if user[1] == 1:
+                    return True
+            return False
+        else:
+            return 2
+
+    def verifyUser(self, username, cursor):
+        """Verify the username passed is in the database.
+
+        Input:
+            - Username as string.
+        Output:
+            - Returns True if user is in the database.
+            - Returns False if user is not in the database.
+        """
+        usernames = self.selectUsernames(cursor)
+        print("usernames ", usernames)
+        for x in usernames:
+            print(x, " ", username)
+            if x == username:
+                return True
+        return False
+
+    def getUser(self, username, cursor):
+        """Verify if passed credentials are correct.
+
+        Input:
+        - Username.
+        Output:
+        - Returns the user data if the username matches any user on the db.
+        - Returns False if there's no match in the database.
+        """
+        data = self.selectUser(username, cursor)
+        if data is not False:
+            return data
+        else:
+            return False
+
+    def getUserById(self, userID, cursor):
+        """Verify if passed credentials are correct.
+
+        Input:
+        - User ID.
+        Output:
+        - Returns the user data if the user ID matches any user on the db.
+        - Returns False if there's no match in the database.
+        """
+        data = self.selectUserById(userID, cursor)
+        if data is not False:
+            return data
+        else:
+            return False
 
     def getRooms(self, cursor):
         """Return all rooms."""
@@ -680,7 +828,8 @@ class Db(object):
 
     def selectRoomOfTypeInGroup(self, roomType, roomGroup, cursor):
         """If available return a roomNo of a room in roomGroup of roomType."""
-        query = """SELECT `roomNo` FROM rooms WHERE roomGroup = ? AND typeID = ? AND statusID != 2 OR (roomGroup = ? AND typeID = ? AND statusID != 3);"""
+        query = """SELECT `roomNo` FROM rooms WHERE roomGroup = ? AND typeID = ? AND
+            statusID != 2 OR (roomGroup = ? AND typeID = ? AND statusID != 3);"""
         cursor.execute(query, [roomGroup, roomType[0], roomGroup, roomType[0]])
         item = cursor.fetchall()
         return item
@@ -751,6 +900,210 @@ class Db(object):
                 # rsvRoom[ID, rsvID, roomType, roomsAmount]
                 roomsGroups[room[2]] -= room[3]
         return roomsGroups
+
+    # def insertQuery(self, table, items, columns=None):
+    #     """Insert escaped query.
+    #
+    #     Return a parameterized query and the values for it.
+    #     If you are not passing values for all the table columns
+    #         then you must also pass which columns you are passing.
+    #     """
+    #     # Queries that get input from a user are dangerous.
+    #     # Stay safe by parameterizing them.
+    #     # for each value there must be a '?'.
+    #     parameters = "?"
+    #     if len(items) > 1:
+    #         for value in range((len(items) - 1)):
+    #             parameters += ", ?"
+    #
+    #     if columns:
+    #         columns = ", ".join(columns)
+    #         query = "INSERT INTO {} ({}) VALUES({});".format(
+    #             table, columns, parameters)
+    #     else:
+    #         query = "INSERT INTO {} VALUES({});".format(table, parameters)
+    #
+    #     values = []
+    #     for value in items:
+    #         values.append(value)
+    #     return [query, values]
+
+    def newUserTypeDef(self, cursor, data):
+        """Insert user data in database."""
+        query = self.insertQuery("userTypesDefs", data)
+        cursor.execute(query[0], query[1])
+
+    def newUser(self, cursor, data, columns=None):
+        """Insert user data in database."""
+        query = self.insertQuery("users", data, columns)
+        cursor.execute(query[0], query[1])
+
+    def newRoomStatusDef(self, cursor, data):
+        """Insert room status definition in database."""
+        query = self.insertQuery("roomStatusDefs", data)
+        cursor.execute(query[0], query[1])
+
+    def newRoomTypeDef(self, cursor, data):
+        """Insert room type definition in database."""
+        query = self.insertQuery("roomTypesDefs", data)
+        cursor.execute(query[0], query[1])
+
+    def newRoomExtraDef(self, cursor, data):
+        """Insert room extra definition in database."""
+        query = self.insertQuery("roomExtrasDefs", data)
+        cursor.execute(query[0], query[1])
+
+    def newRoom(self, cursor, data):
+        """Insert room data in database."""
+        query = self.insertQuery("rooms", data)
+        cursor.execute(query[0], query[1])
+
+    def newRoomGroup(self, cursor, data):
+        """Insert room group data in database."""
+        query = self.insertQuery("roomGroups", data)
+        cursor.execute(query[0], query[1])
+
+    def newRoomExtra(self, cursor, data):
+        """Insert room extras in database."""
+        columns = ["roomNo", "extraID"]
+        query = self.insertQuery("roomExtras", data, columns)
+        cursor.execute(query[0], query[1])
+
+    def newRsvExtraDef(self, cursor, data):
+        """Insert reservation extra definition in database."""
+        query = self.insertQuery("rsvExtrasDefs", data)
+        cursor.execute(query[0], query[1])
+
+    def newRsvStatusDef(self, cursor, data):
+        """Insert reservation extra definition in database."""
+        query = self.insertQuery("rsvStatusDefs", data)
+        cursor.execute(query[0], query[1])
+
+    def newGuest(self, cursor, data):
+        """Insert guest data in database."""
+        columns = [
+            "name", "lastName", "age", "notes", "registerDate", "userID"
+            ]
+        query = self.insertQuery("guests", data, columns)
+        cursor.execute(query[0], query[1])
+        # We need the ID to add to it's extras.
+        lastID = cursor.lastrowid
+        return lastID
+
+    def newGuestAddress(self, cursor, data):
+        """Insert guest address data in database."""
+        columns = [
+            "guestID", "country", "region", "city", "street", "zone",
+            "extNumber", "intNumber", "cp"
+            ]
+        query = self.insertQuery("guestAddresses", data, columns)
+        cursor.execute(query[0], query[1])
+
+    def newGuestPhone(self, cursor, data):
+        """Insert guest phone data in database."""
+        columns = [
+            "guestID", "countryCode", "regionCode", "phone", "ext", "name"
+            ]
+        query = self.insertQuery("guestPhones", data, columns)
+        cursor.execute(query[0], query[1])
+
+    def newGuestEmail(self, cursor, data):
+        """Insert guest email data in database."""
+        columns = ["guestID", "email", "name"]
+        query = self.insertQuery("guestEmails", data, columns)
+        cursor.execute(query[0], query[1])
+
+    def newGuestIDD(self, cursor, data):
+        """Insert guest identification data in database."""
+        columns = ["guestID", "IDType", "IDNumber"]
+        query = self.insertQuery("guestsIDDs", data, columns)
+        cursor.execute(query[0], query[1])
+
+    def newCompany(self, cursor, data):
+        """Insert company data in database."""
+        columns = [
+            "businessName", "companyName", "RFC", "notes", "registerDate",
+            "userID"
+            ]
+        query = self.insertQuery("companies", data, columns)
+        cursor.execute(query[0], query[1])
+        # We need the ID to add to it's extras.
+        lastID = cursor.lastrowid
+
+        return lastID
+
+    def newCompanyAddress(self, cursor, data):
+        """Insert company address data in database."""
+        columns = [
+            "companyID", "country", "region", "city", "street", "zone",
+            "extNumber", "intNumber", "cp"
+            ]
+        query = self.insertQuery("companyAddresses", data, columns)
+        cursor.execute(query[0], query[1])
+
+    def newCompanyPhone(self, cursor, data):
+        """Insert company phone data in database."""
+        columns = [
+            "companyID", "countryCode", "regionCode", "phone", "ext", "name"
+            ]
+        query = self.insertQuery("companyPhones", data, columns)
+        cursor.execute(query[0], query[1])
+
+    def newCompanyEmail(self, cursor, data):
+        """Insert company email data in database."""
+        columns = ["companyID", "email", "name"]
+        query = self.insertQuery("companyEmails", data, columns)
+        cursor.execute(query[0], query[1])
+
+    def newCompanyContact(self, cursor, data):
+        """Insert company contact data in database."""
+        columns = ["companyID", "name", "lastName", "notes"]
+        query = self.insertQuery("companyContacts", data, columns)
+        cursor.execute(query[0], query[1])
+
+    def newReservation(self, cursor, data):
+        """Insert reservation data in database."""
+        columns = [
+            "guestID", "statusID", "userID", "companyID", "adults", "minors",
+            "dateIn", "dateOut", "rate", "paid", "rsvgroup", "roomNo", "roomType",
+            "notes", "registerDate"
+            ]
+        query = self.insertQuery("reservations", data, columns)
+        cursor.execute(query[0], query[1])
+        lastID = cursor.lastrowid
+
+        return lastID
+
+    def newRsvOGuest(self, cursor, data):
+        """Insert reservation other guest data in database."""
+        columns = ["rsvID", "name", "lastName", "notes"]
+
+        query = self.insertQuery("rsvOtherGuests", data, columns)
+        cursor.execute(query[0], query[1])
+
+    def newRsvExtra(self, cursor, data):
+        """Insert reservation extra data in database."""
+        columns = ["rsvID", "extraID"]
+        query = self.insertQuery("rsvExtras", data, columns)
+        cursor.execute(query[0], query[1])
+
+    def newRsvRoom(self, cursor, data):
+        """Insert reservation rooms data in database."""
+        columns = ["roomType"]
+        query = self.insertQuery("reservations", data, columns)
+        cursor.execute(query[0], query[1])
+
+    def newRsvParking(self, cursor, data):
+        """Insert reservation parking data in database."""
+        columns = ["rsvID", "carModel", "plateNumber"]
+        query = self.insertQuery("rsvParking", data, columns)
+        cursor.execute(query[0], query[1])
+
+    def newRsvRoomId(self, cursor, data):
+        """Insert reservation room ID data in database."""
+        columns = ["rsvID", "room"]
+        query = self.insertQuery("rsvRoomsIDs", data, columns)
+        cursor.execute(query[0], query[1])
 
 
 class dummyDb(object):
@@ -1019,8 +1372,8 @@ class dummyDb(object):
         self.newUserTypeDef(cursor, [0, "root", "root"])
         # then we create the root user
         today = datetime.datetime.today().date()
-        self.newUser(cursor, [0, 0, "root", "raspberry", today, 0], [
-            "userID", "typeID", "name", "password", "registerDate",
+        self.newUser(cursor, [0, 0, "root", "root", "raspberry", today, 0], [
+            "userID", "typeID", "username", "name", "password", "registerDate",
             "registeredBy"
             ])
         # Now we populate the database with more dummy data
@@ -1153,8 +1506,9 @@ class dummyDb(object):
             reservationData = generator.dummyRsvData(date)
 
             # We are going to create multiple reservations for group reservations, so for
-            # them to have the randomly generated room data we create them individually and
-            # assign them a room type from the list, rsvRoomNo is the iterator for that list.
+            # them to have the randomly generated room data we create them individually
+            # and assign them a room type from the list, rsvRoomNo is the iterator for
+            # that list.
             rsvRoomNo = 0
             for room in range(len(reservationData[1])):
                 reservationData[0][0] = guestID
