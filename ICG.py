@@ -26,13 +26,13 @@ def enablePrint():
 class RootCreator(QWidget):
     """Login window shown at startup to create a root user."""
 
-    def __init__(self, parent, restart, cursor):
+    def __init__(self, parent, callback, cursor):
         """Init."""
         super().__init__(parent)
 
         self.cursor = cursor
 
-        self.restart = restart
+        self.callback = callback
 
         self.setFixedWidth(300)
 
@@ -188,7 +188,7 @@ class RootCreator(QWidget):
 
         self.db.newUser(self.cursor, data, columns)
 
-        self.restart()
+        self.callback()
 
     def encrypt(self, password):
         """Encrypt the password."""
@@ -198,11 +198,11 @@ class RootCreator(QWidget):
 class AdminCreator(QWidget):
     """Login window shown at startup to create an admin user."""
 
-    def __init__(self, parent, restart, cursor):
+    def __init__(self, parent, callback, cursor):
         """Init."""
         super().__init__(parent)
 
-        self.restart = restart
+        self.callback = callback
         self.cursor = cursor
 
         self.setFixedWidth(300)
@@ -443,7 +443,7 @@ class AdminCreator(QWidget):
         userData = self.db.getUser(username, self.cursor)
         user = [userData[0], userData[1],
                 userData[2], userData[3], userData[4]]
-        self.restart(user)
+        self.callback(user)
 
     def userData(self, data):
         """Get the user data from the prompt."""
