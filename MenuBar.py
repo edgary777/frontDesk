@@ -10,10 +10,11 @@ import Buttons
 class MenuBar(QWidget):
     """Menu bar object."""
 
-    def __init__(self, items, parent):
+    def __init__(self, items, parent, mainW):
         """Init."""
         super().__init__(parent)
 
+        self.mainW = mainW
         self.items = items
 
         self.initUi()
@@ -33,6 +34,10 @@ class MenuBar(QWidget):
         layout.addLayout(buttons)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
+
+        # signal catching
+        # buttons are inversed.
+        self.btn0.clicked.connect(self.mainW.logout)
         # layout.addStretch()
 
     def generateButtons(self, items):
@@ -50,9 +55,9 @@ class MenuBar(QWidget):
             # self.color is a list of rgb values, we must make it a CSV string
             color = ",".join(str(e) for e in colorRGB)
             label = str(i)
-            icon = "Resources\\c-close.png"
+            # icon = "Resources\\c-close.png"
             setattr(self, "btn" + str(x),
-                    Buttons.MenuBarBtn(color, label, icon, self))
+                    Buttons.MenuBarBtn(color, label, self))
             btns.append(getattr(self, "btn" + str(x)))
             # layout.addWidget(getattr(self, "btn" + str(x)))
             li = []

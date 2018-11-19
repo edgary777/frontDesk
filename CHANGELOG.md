@@ -3,14 +3,41 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
+___
 
-## Unreleased
+## Unreleased 0.8.0 Alpha
 ### Added
+- main.py:
+  - Added the method changeDisplay to use whenever the display must be changed.
+  - Added the method getVersion to get the current version from the changelog file.
+  - Added the logout method to allow logging out of a session.
 
 ### Removed
+- main.py:
+  - Removed the restart method because it was redundant.
 
 ### Modified
+- main.py:
+  - Modified to get the version number from the changelog file.
+  - Modified to use a function to change what is displayed.
+  - Modified to pass itself as an argument to its children so they can make use of its methods easier.
 
+- Session.py
+  - Modified the class to require the main window be passed on instantiation so it can use it's methods and pass it to the children easier.
+  - Modified to make use of the getVersion method of the main window.
+
+- MenuBar.py:
+  - Modified to require the main window be passed on instantiation so it can make use of it's methods.
+  - Modified to start adding signals functionality to the buttons.
+  - Modified to stop using icons.
+
+- Buttons.py:
+  - MenuBarBtn was modified to stop creating null QPixmaps when no icon is passed to it.
+
+- CHANGELOG.md:
+  - Modified to add a line separator in between versions.
+
+___
 ## V0.7.0
 ### Added
 - Added Login.py, it is a login window widget that starts the program.
@@ -26,6 +53,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Modified dbVisualizer.py to show user data for testing.
 - Modified CHANGELOG.md to say 'Modified' instead of changed, also fixed a typo.
 
+___
 ## V0.6.0
 ### Added
 - Added color to the debug prints to be able to know what's going on.
@@ -53,11 +81,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Changed the overall visual style of the dashboard.
 - Changed some behaviors of the main window layout.
 
+___
 ## V0.5.0
 ### Modified
 - Simplified the connections to the database. Now the same connection is used throughout
     the lifetime of the program.
 
+___
 ## V0.4.0
 ### Added
 - New module Dashboard. The dashboard will show lists with relevant room/reservation data
@@ -70,7 +100,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - New module Db. Handles the communication with de database.
 - New module Manager. handles the interactions between the UI and the database
 
-
+___
 ## V0.3.0
 ### Added
 - New SideBar module and SideBar class. The sidebar is a qwidget object that
@@ -79,11 +109,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - New SideBarBtn, it is a fixed size solid background button and can
     contain an icon and a label.
 
+___
 ## V0.2.0
 ### Added
 - The program now works with sessions that must be started with user data.
     User data is not being used, it is just a placeholder for now.
 
+___
 ## V0.1.0
 ### Added
 - Changelog.md

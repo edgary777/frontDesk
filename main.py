@@ -45,63 +45,98 @@ class MainWindow(QWidget):
         self.startDb = Db.Db()
         self.session = None
         self.cursor = cursor
-        print(self.startDb.selectUsernames(self.cursor))
-        self.setWindowTitle("V0.6.0")
+        # print(self.startDb.selectUsernames(self.cursor))
 
+        self.setWindowTitle(self.getVersion())
         self.initUi()
         self.setStyleSheet("font-family: 'Roboto'; color: #333333;")
 
     def initUi(self):
         """Ui Setup."""
         layout = QVBoxLayout()
-        self.session = self.start()
+        # self.session = self.start()
         layout.addWidget(self.session)
         layout.setAlignment(Qt.AlignCenter)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-
         self.setLayout(layout)
+        self.start()
 
     def start(self, user=None):
         """Start a session."""
+        # If a user was passed, then use it to start a session.
+
         if user:
             print("Loggin in")
-            return Session.Session(user, self, self.cursor)
+            self.session = Session.Session(user, self, self.cursor)
+            self.changeDisplay(self.session)
+            return
+
+        # Checking for users with root privileges.
 
         verifyRoot = self.startDb.verifyRoot(self.cursor)
         if verifyRoot == 2 or verifyRoot is False:
-            print("No root or no users, register root to keep going.")
+            print("No root or no users at all, register root to keep going.")
             # No registered users, must create a root starting.
-            self.Root = RootCreator(self, self.restart, cursor)
-            return self.Root
+            widget = RootCreator(self, self.start, cursor)
+            self.changeDisplay(widget)
+            return
+
+        # Checking for users with admin privileges.
 
         verifyAdmin = self.startDb.verifyAdmin(self.cursor)
         if verifyAdmin == 2:
             # For some reason there are no users, so we restart to prompt for root.
             # Raise Error to log message.
             print("No users registered?? restarted to try to prompt for new root.")
-            self.restart()
-        elif verifyAdmin is False:
-            print("There's a root but not an admin, register an admin to keep going.")
-            # No registered admin users, must create an admin starting.
-            self.Admin = AdminCreator(self, self.restart, self.cursor)
-            return self.Admin
-        elif verifyAdmin:
-            print("There's a registered admin and a registered root, login to start.")
-            # login prompt.
-            self.login = Login(self, self.restart, self.cursor)
-            return self.login
-
-    def restart(self, user=None):
-        """Restart the session."""
-        self.session.setParent(None)
-        self.session.deleteLater()
-        # Prompt for user login data and verify credentials in db
-        if not user:
             self.start()
-        # user = [ID, TYPE[ROOT=0, ADMIN=1, USER=2]]
-        self.session = self.start(user)
-        self.layout().addWidget(self.session)
+            return
+        elif verifyAdmin is False:
+            # No registered admin users, must create an admin starting.
+            print("There's a root, but not an admin, register an admin to keep going.")
+            widget = AdminCreator(self, self.start, self.cursor)
+            self.changeDisplay(widget)
+            return
+        elif verifyAdmin:
+            # login prompt.
+            print("There's a registered admin and a registered root. Login to start.")
+            widget = Login(self, self.start, self.cursor)
+            self.changeDisplay(widget)
+            return
+
+    def changeDisplay(self, widget):
+        """Change what is being displayed on the main window."""
+        # Remove the currently displayed widget on the passed window layout.
+        toRemoveWI = self.layout().takeAt(0)  # QWidgetItem
+        if toRemoveWI is None:
+            print("There was no item to remove.")
+            # The window is empty, add the widget without removing.
+            self.layout().addWidget(widget)
+            return
+        # Set the widget for garbage collection.
+        toRemoveW = toRemoveWI.widget()  # QWidget
+        toRemoveW.setParent(None)
+        # set a the new widget on the passed window.
+        self.layout().addWidget(widget)
+
+    def logout(self):
+        """Log out and show the login screen."""
+        if self.session is not None:
+            self.setWindowTitle("V0.8.0 Alpha")
+            self.session.setParent(None)
+            self.session.deleteLater()
+            widget = Login(self, self.start, self.cursor)
+            self.changeDisplay(widget)
+
+    def getVersion(self):
+        """Return the last version number used on the changelog."""
+        with open("CHANGELOG.md", "r") as version:
+            for line in version:
+                if line[:2] == "##":
+                    if line[:14] == "## Unreleased ":
+                        return "V" + line[14:]
+                    elif line[:4] == "## V":
+                        return "V" + line[4:]
 
     def paintEvent(self, event):
         """Set window background color."""

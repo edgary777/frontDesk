@@ -12,12 +12,12 @@ import Db
 class Session(QWidget):
     """Holds all data and can be restarted to show changes or change user."""
 
-    def __init__(self, user, parent, cursor):
+    def __init__(self, user, mainW, cursor):
         """Init."""
-        super().__init__(parent)
+        super().__init__(mainW)
 
         # user = [ID, TYPE[ROOT=0, ADMIN=1, USER=2]]
-        self.parent = parent
+        self.mainW = mainW
         self.user = user
 
         self.cursor = cursor
@@ -38,20 +38,20 @@ class Session(QWidget):
             # Raise error because this data is wrong.
             pass
 
-        title = "V0.6.0 - Usuario: {} - Privilegios: {}".format(
+        title = self.mainW.getVersion() + " - Usuario: {} - Privilegios: {}".format(
             str(self.username), self.userType)
 
-        self.parent.setWindowTitle(title)
+        self.mainW.setWindowTitle(title)
 
         self.initUi()
 
     def initUi(self):
         """Ui Setup."""
-        layout = QVBoxLayout()
+        layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
 
         btnList = ["Reservación", "Check-In", "Check-Out", "Configuración"]
-        menubar = MenuBar.MenuBar(btnList, self)
+        menubar = MenuBar.MenuBar(btnList, self, self.mainW)
 
         self.checkIn = DashScroll(self)
         self.checkOut = DashScroll(self)

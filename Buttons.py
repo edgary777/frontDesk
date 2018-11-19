@@ -170,7 +170,7 @@ class MenuBarBtn(QAbstractButton):
     icon must be a png file with transparent background.
     """
 
-    def __init__(self, color, label, icon, parent, actionL=None, actionR=None):
+    def __init__(self, color, label, parent, icon=None, actionL=None, actionR=None):
         """Init."""
         super().__init__(parent)
 
@@ -193,22 +193,23 @@ class MenuBarBtn(QAbstractButton):
         """Ui Setup."""
         self.setMinimumHeight(35)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        if self.icon:
+            iconSize = 30
 
-        iconSize = 30
-
-        pixmap = QPixmap(self.icon)
-        pixmap = pixmap.scaled(iconSize, iconSize, Qt.KeepAspectRatio)
-        icon = QLabel()
-        icon.setPixmap(pixmap)
-        # icon.setFixedSize(iconSize + 10, iconSize + 10)
-        icon.setAlignment(Qt.AlignCenter)
+            pixmap = QPixmap(self.icon)
+            pixmap = pixmap.scaled(iconSize, iconSize, Qt.KeepAspectRatio)
+            icon = QLabel()
+            icon.setPixmap(pixmap)
+            # icon.setFixedSize(iconSize + 10, iconSize + 10)
+            icon.setAlignment(Qt.AlignCenter)
 
         self.qlabel = QLabel(self.label)
         self.qlabel.setAlignment(Qt.AlignCenter)
 
         layout = QHBoxLayout()
         layout.addStretch()
-        layout.addWidget(icon)
+        if self.icon:
+            layout.addWidget(icon)
         layout.addWidget(self.qlabel)
         layout.addStretch()
         self.setLayout(layout)
