@@ -12,13 +12,12 @@ from bcrypt import checkpw
 class Login(QWidget):
     """Login window shown at startup."""
 
-    def __init__(self, parent, restart, cursor):
+    def __init__(self, parent, mainW):
         """Init."""
         super().__init__(parent)
 
-        self.cursor = cursor
+        self.mainW = mainW
 
-        self.restart = restart
         self.setFixedWidth(300)
         self.setFixedHeight(200)
 
@@ -110,7 +109,7 @@ class Login(QWidget):
 
     def getData(self, username):
         """Return the data of the user from the database."""
-        data = self.db.getUser(username, self.cursor)
+        data = self.db.getUser(username, self.mainW.cursor)
         if data is not False:
             return data
         else:
@@ -140,10 +139,10 @@ class Login(QWidget):
             return
 
         if self.checkPass(self.password.text(), self.dbPass):
-            user = self.db.getUser(self.username.text(), self.cursor)
+            user = self.db.getUser(self.username.text(), self.mainW.cursor)
             # user = [ID, TYPE[ROOT=0, ADMIN=1, USER=2]]
             user = [user[0], user[1]]
-            self.restart(user)
+            self.mainW.start(user)
         else:
             # Raise error and sende message to the display.
             self.password.setText("")

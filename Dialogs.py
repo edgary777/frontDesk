@@ -6,12 +6,14 @@ import Db
 from bcrypt import checkpw
 
 
-class RootCredentialsD(QDialog):
-    """Dialog to prompt for the credentials of a root user."""
+class CredentialsPromptD(QDialog):
+    """Dialog to prompt for the credentials of a user."""
 
-    def __init__(self, parent, callback, cursor):
+    def __init__(self, parent, callback, minPrivilege, cursor):
         """Init."""
         super().__init__(parent)
+
+        self.minPrivilege = minPrivilege
 
         self.cursor = cursor
 
@@ -57,7 +59,7 @@ class RootCredentialsD(QDialog):
         """Ui setup."""
         layout = QVBoxLayout()
 
-        title = QLabel("Usuario Root")
+        title = QLabel("Registrar Cambios")
         title.setStyleSheet(self.titleStyle)
         title.setAlignment(Qt.AlignCenter)
 
@@ -132,10 +134,10 @@ class RootCredentialsD(QDialog):
             print("Password is incorrect")
             return
 
-        if data[1] != 0:
+        if data[1] > self.minPrivilege:
             self.message.setText("Este usuario no tiene permiso de realizar esta acción.")
             self.password.setText("")
-            print("User is not root")
+            print("User does not have enough privileges.")
             return
         # If all those tests were passed, now pass the data and accept the dialog.
         self.callback(data)

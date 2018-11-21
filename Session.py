@@ -12,19 +12,17 @@ import Db
 class Session(QWidget):
     """Holds all data and can be restarted to show changes or change user."""
 
-    def __init__(self, user, mainW, cursor):
+    def __init__(self, mainW):
         """Init."""
         super().__init__(mainW)
 
         # user = [ID, TYPE[ROOT=0, ADMIN=1, USER=2]]
         self.mainW = mainW
-        self.user = user
-
-        self.cursor = cursor
+        self.user = self.mainW.user
 
         self.db = Db.Db()
 
-        self.userData = self.db.getUserById(self.user[0], self.cursor)
+        self.userData = self.db.getUserById(self.user[0], self.mainW.cursor)
 
         self.username = self.userData[2]
 
@@ -33,12 +31,12 @@ class Session(QWidget):
         elif self.userData[1] == 1:
             self.userType = " Admin"
         elif self.userData[1] == 2:
-            self.userType = " Usuario"
+            self.userType = " Regular"
         else:
             # Raise error because this data is wrong.
             pass
 
-        title = self.mainW.getVersion() + " - Usuario: {} - Privilegios: {}".format(
+        title = self.mainW.getVersion() + " - Usuario: {} - Tipo: {}".format(
             str(self.username), self.userType)
 
         self.mainW.setWindowTitle(title)
@@ -86,23 +84,23 @@ class Session(QWidget):
 
     def updateCheckIn(self):
         """Update the checkIn scroller."""
-        manager = Manager.CheckInManager(self, self.cursor)
+        manager = Manager.CheckInManager(self, self.mainW.cursor)
         checkIns = manager.getToday()
         self.checkIn.getList().addItems([2, checkIns])
 
     def updateCheckOut(self):
         """Update the checkOut scroller."""
-        # rsvManager = Manager.ReservationManager(self, self.cursor)
+        # rsvManager = Manager.ReservationManager(self, self.mainW.cursor)
         # rsvManager.getActiveRsvs()
         # rsvManager.getFinishedRsvs()
-        manager = Manager.CheckOutManager(self, self.cursor)
+        manager = Manager.CheckOutManager(self, self.mainW.cursor)
         checkOuts = manager.getToday()
 
         self.checkOut.getList().addItems([3, checkOuts])
 
     def updateStatus(self):
         """Update the roomStatus scroller."""
-        manager = Manager.RoomManager(self, self.cursor)
+        manager = Manager.RoomManager(self, self.mainW.cursor)
         rooms = manager.getRooms()
         roomsData = [manager.getRoom(room) for room in rooms]
         self.roomStatus.getList().addItems([1, roomsData])

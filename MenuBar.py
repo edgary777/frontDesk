@@ -5,6 +5,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import random
 import Buttons
+from Settings import SettingsWindow as Settings
 
 
 class MenuBar(QWidget):
@@ -37,7 +38,7 @@ class MenuBar(QWidget):
 
         # signal catching
         # buttons are inversed.
-        self.btn0.clicked.connect(self.mainW.logout)
+        self.btn0.clicked.connect(lambda: self.mainW.changeDisplay(Settings(self.mainW)))
         # layout.addStretch()
 
     def generateButtons(self, items):

@@ -38,13 +38,15 @@ if os.path.dirname(sys.executable) == filePath:
 class MainWindow(QWidget):
     """Main window widget."""
 
-    def __init__(self, cursor):
+    def __init__(self, cursor, connection):
         """Init."""
         super().__init__()
 
         self.startDb = Db.Db()
         self.session = None
         self.cursor = cursor
+        self.user = None
+        self.connection = connection
         # print(self.startDb.selectUsernames(self.cursor))
 
         self.setWindowTitle(self.getVersion())
@@ -65,10 +67,12 @@ class MainWindow(QWidget):
     def start(self, user=None):
         """Start a session."""
         # If a user was passed, then use it to start a session.
-
         if user:
+            self.user = user
+
+        if self.user:
             print("Loggin in")
-            self.session = Session.Session(user, self, self.cursor)
+            self.session = Session.Session(self)
             self.changeDisplay(self.session)
             return
 
@@ -78,7 +82,7 @@ class MainWindow(QWidget):
         if verifyRoot == 2 or verifyRoot is False:
             print("No root or no users at all, register root to keep going.")
             # No registered users, must create a root starting.
-            widget = RootCreator(self, self.start, cursor)
+            widget = RootCreator(self, self)
             self.changeDisplay(widget)
             return
 
@@ -94,13 +98,13 @@ class MainWindow(QWidget):
         elif verifyAdmin is False:
             # No registered admin users, must create an admin starting.
             print("There's a root, but not an admin, register an admin to keep going.")
-            widget = AdminCreator(self, self.start, self.cursor)
+            widget = AdminCreator(self, self)
             self.changeDisplay(widget)
             return
         elif verifyAdmin:
             # login prompt.
             print("There's a registered admin and a registered root. Login to start.")
-            widget = Login(self, self.start, self.cursor)
+            widget = Login(self, self)
             self.changeDisplay(widget)
             return
 
@@ -121,11 +125,12 @@ class MainWindow(QWidget):
 
     def logout(self):
         """Log out and show the login screen."""
-        if self.session is not None:
-            self.setWindowTitle("V0.8.0 Alpha")
-            self.session.setParent(None)
-            self.session.deleteLater()
-            widget = Login(self, self.start, self.cursor)
+        if self.user is not None:
+            # for i in reversed(range(self.layout.count())):
+            #     self.layout.itemAt(i).widget().deleteLater()
+            self.user = None
+            self.setWindowTitle(self.getVersion())
+            widget = Login(self, self)
             self.changeDisplay(widget)
 
     def getVersion(self):
@@ -189,7 +194,7 @@ cursor = startConnection[1]
 atexit.register(db.endConnection, connection)
 
 app = QApplication(sys.argv)
-window = MainWindow(cursor)
+window = MainWindow(cursor, connection)
 # Having a fixed size for the windows makes it unable to be maximized
 # window.setMaximumWidth(1380)
 window.showMaximized()
