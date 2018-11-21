@@ -5,8 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 ___
 
-## Unreleased 0.8.0 Alpha
+## Unreleased 0.9.0 Alpha
+___
+
+## 0.8.0
 ### Added
+- Added Settings.py, it is a window widget to interact with the software settings.
+- Added UserCreator.py, it is a widget that prompts for information for the creation of new users.
 - main.py:
   - Added the method changeDisplay to use whenever the display must be changed.
   - Added the method getVersion to get the current version from the changelog file.
@@ -22,17 +27,29 @@ ___
   - Modified to use a function to change what is displayed.
   - Modified to pass itself as an argument to its children so they can make use of its methods easier.
 
+
 - Session.py
   - Modified the class to require the main window be passed on instantiation so it can use it's methods and pass it to the children easier.
   - Modified to make use of the getVersion method of the main window.
+
 
 - MenuBar.py:
   - Modified to require the main window be passed on instantiation so it can make use of it's methods.
   - Modified to start adding signals functionality to the buttons.
   - Modified to stop using icons.
 
+
 - Buttons.py:
   - MenuBarBtn was modified to stop creating null QPixmaps when no icon is passed to it.
+
+
+- Dialogs.py:
+  - RootCredentialsD was renamed to CredentialsPromptD, it was modified to allow it to be reusable in all cases, not just for root users.
+
+
+- ICG.py:
+  - Modified the class to require the main window be passed on instantiation so it can use it's methods and pass it to the children easier.
+
 
 - CHANGELOG.md:
   - Modified to add a line separator in between versions.
@@ -42,7 +59,7 @@ ___
 ### Added
 - Added Login.py, it is a login window widget that starts the program.
 - Added ICG.py, it is an Initial Credentials Generator for the first time the program runs.
-- Added Dialogs, it is where the pop up dialogs code is found.
+- Added Dialogs.py, it is where the pop up dialogs code is found.
 - Added Validators.py, it contains functions to validate input data.
 
 ### Modified
@@ -64,11 +81,11 @@ ___
 
 ### Removed
 - Removed the need to use data objects for the data to be passed around.
-    ~ Removed People.py
-    ~ Removed Reservation.py
-    ~ Removed Room.py
-    ~ Removed DataItems.py
-    ~ Removed person.png
+    - Removed People.py
+    - Removed Reservation.py
+    - Removed Room.py
+    - Removed DataItems.py
+    - Removed person.png
 
 ### Modified
 - Changed the SideBar to a MenuBar so the layout makes more sense.
@@ -90,9 +107,7 @@ ___
 ___
 ## V0.4.0
 ### Added
-- New module Dashboard. The dashboard will show lists with relevant room/reservation data
-    (eg. today's check-in and check-out data).
-    These lists items can be interactive.
+- New module Dashboard. The dashboard will show lists with relevant room/reservation data (eg. today's check-in and check-out data). These lists items can be interactive.
 - New module DataItems. Contains the class that is the base for the data representations
     of other modules that share some basic features.
 - New modules Reservation and Room. Each containing its graphic and data representation.
@@ -122,4 +137,4 @@ ___
 - main.py added and filled with the most basic PyQt5 empty window.
 
 ### Modified
--README.md was changed to show more information about the project.
+- README.md was changed to show more information about the project.
