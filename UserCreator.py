@@ -257,7 +257,7 @@ class UserCreator(QWidget):
         email = self.email.text()
         password = self.encrypt(self.password.text())
         registerDate = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        registeredBy = self.username.text()
+        registeredBy = self.data[0]
 
         data = [typeID, username, name, lastName,
                 email, password, registerDate, registeredBy]
@@ -265,6 +265,8 @@ class UserCreator(QWidget):
                    "password", "registerDate", "registeredBy"]
 
         self.db.newUser(self.mainW.cursor, data, columns)
+        self.db.logEntry(self.data[0], 0, [str(username), typeID], self.mainW.cursor)
+        self.mainW.connection.commit()
         self.cancelBtn.click()
         # user = [ID, TYPE[ROOT=0, ADMIN=1, USER=2], USERNAME, NAME, LASTNAME]
 

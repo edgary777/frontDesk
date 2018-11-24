@@ -11,6 +11,10 @@ import Session
 from Login import Login
 from ICG import RootCreator, AdminCreator
 
+
+debugPrint = True
+debugDb = True
+
 # Logging errors to a file should only happen when the program has been freezed.
 # The logging will only be used when the file path and python path are the same.
 
@@ -72,6 +76,8 @@ class MainWindow(QWidget):
 
         if self.user:
             print("Loggin in")
+            self.startDb.logEntry(self.user[0], 1, None, self.cursor)
+            self.connection.commit()
             self.session = Session.Session(self)
             self.changeDisplay(self.session)
             return
@@ -126,8 +132,8 @@ class MainWindow(QWidget):
     def logout(self):
         """Log out and show the login screen."""
         if self.user is not None:
-            # for i in reversed(range(self.layout.count())):
-            #     self.layout.itemAt(i).widget().deleteLater()
+            self.startDb.logEntry(self.user[0], 2, None, self.cursor)
+            self.connection.commit()
             self.user = None
             self.setWindowTitle(self.getVersion())
             widget = Login(self, self)
@@ -163,14 +169,10 @@ def enablePrint():
     sys.stdout = sys.__stdout__
 
 
-debugPrint = True
-
 if debugPrint is False:
     blockPrint()
 else:
     enablePrint()
-
-debugDb = False
 
 if debugDb:
     exists = os.path.isfile("database.db")

@@ -175,17 +175,30 @@ class RootCreator(QWidget):
         self.db.newUserTypeDef(
             self.mainW.cursor, [userTypeId, userDescription, userLongDescription])
 
+        userTypeId = 1
+        userDescription = "Admin"
+        userLongDescription = "User with administrator privileges."
+        self.db.newUserTypeDef(
+            self.mainW.cursor, [userTypeId, userDescription, userLongDescription])
+
+        userTypeId = 2
+        userDescription = "Regular"
+        userLongDescription = "User with no elevated privileges."
+        self.db.newUserTypeDef(
+            self.mainW.cursor, [userTypeId, userDescription, userLongDescription])
+
         typeID = 0
         username = self.username.text()
         password = self.encrypt(self.password.text())
         registerDate = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        registeredBy = self.username.text()
+        registeredBy = 1
 
         data = [typeID, username, password, registerDate, registeredBy]
         columns = ["typeID", "username",
                    "password", "registerDate", "registeredBy"]
 
         self.db.newUser(self.mainW.cursor, data, columns)
+        self.db.logEntry(1, 0, [str(username), typeID], self.mainW.cursor)
         self.mainW.connection.commit()
 
         self.mainW.start()
@@ -417,19 +430,6 @@ class AdminCreator(QWidget):
 
     def registerUser(self):
         """Register the admin user data."""
-        userTypeId = 1
-        userDescription = "Admin"
-        userLongDescription = "User with administrator privileges."
-        self.db.newUserTypeDef(
-            self.mainW.cursor, [userTypeId, userDescription, userLongDescription])
-
-        userTypeId = 2
-        userDescription = "Regular"
-        userLongDescription = "User with no elevated privileges."
-        self.db.newUserTypeDef(
-            self.mainW.cursor, [userTypeId, userDescription, userLongDescription])
-
-
         typeID = 1
         username = self.username.text()
         name = self.name.text()
@@ -437,14 +437,14 @@ class AdminCreator(QWidget):
         email = self.email.text()
         password = self.encrypt(self.password.text())
         registerDate = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        registeredBy = self.username.text()
 
         data = [typeID, username, name, lastName,
-                email, password, registerDate, registeredBy]
+                email, password, registerDate, self.data[0]]
         columns = ["typeID", "username", "name", "lastName", "email",
                    "password", "registerDate", "registeredBy"]
 
         self.db.newUser(self.mainW.cursor, data, columns)
+        self.db.logEntry(self.data[0], 0, [str(username), typeID], self.mainW.cursor)
         self.mainW.connection.commit()
         # user = [ID, TYPE[ROOT=0, ADMIN=1, USER=2], USERNAME, NAME, LASTNAME]
         userData = self.db.getUser(username, self.mainW.cursor)
@@ -453,7 +453,7 @@ class AdminCreator(QWidget):
         self.mainW.start(user)
 
     def userData(self, data):
-        """Get the user data from the prompt."""
+        """Get the data of the user making the registy."""
         self.data = data
 
     def encrypt(self, password):

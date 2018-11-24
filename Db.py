@@ -18,6 +18,16 @@ class Db(object):
         connection.execute("""PRAGMA foreign_keys = ON;""")
         cursor = connection.cursor()
 
+        query = """CREATE TABLE IF NOT EXISTS log(
+                        logID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        userID INT REFERENCES users(userID),
+                        username TEXT,
+                        actionType TEXT,
+                        log TEXT,
+                        date DATE
+               );"""
+        cursor.execute(query)
+
         query = """CREATE TABLE IF NOT EXISTS companies(
                         companyID INTEGER PRIMARY KEY AUTOINCREMENT,
                         businessName TEXT,
@@ -635,6 +645,35 @@ class Db(object):
             if x == username:
                 return True
         return False
+
+    def logEntry(self, userID, actionType, logData, cursor, username=None):
+        """Entry log of a user action."""
+        print("UserAction: ", actionType)
+        if userID is None and username is not None:
+            userID = self.getUser(username, cursor)[0]
+        username = self.getUserById(userID, cursor)[2]
+        if actionType == 0:
+            action = "Registro de usuario"
+            if logData[1] == 0:
+                priv = "Root."
+            elif logData[1] == 1:
+                priv = "Admin."
+            else:
+                priv = "Regular."
+            log = "Se registro al usuario {} con privilegios de usuario {}.".format(logData[0], priv)
+        if actionType == 1:
+            action = "Inicio de sesión"
+            log = "El usuario {} inicio sesión.".format(username)
+        if actionType == 2:
+            action = "Cierre de sesión"
+            log = "El usuario {} cerro sesión.".format(username)
+
+        date = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S:%f")
+        data = [userID, username, action, log, date]
+
+        columns = ["userID", "username", "actionType", "log", "date"]
+        query = self.insertQuery("log", data, columns)
+        cursor.execute(query[0], query[1])
 
     def getUser(self, username, cursor):
         """Verify if passed credentials are correct.

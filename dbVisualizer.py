@@ -36,7 +36,7 @@ class Visualizer(QWidget):
             "CompanyPhones": 7,
             "users": 10,
             "userTypesDefs": 3,
-            "Guests": 7,
+            "log": 6,
             "GuestIDDs": 4,
             "GuestPhones": 7,
             "reservations": 16,
@@ -75,7 +75,7 @@ class Visualizer(QWidget):
         db = Db.dummyDb()
         tables = ["rooms", "roomStatusDefs", "roomTypesDefs", "roomExtrasDefs",
                   "roomExtras", "rsvStatusDefs", "companies", "companyContacts",
-                  "companyPhones", "users", "userTypesDefs", "guests",
+                  "companyPhones", "users", "userTypesDefs", "log",
                   "guestsIDDs", "guestPhones", "reservations", "guestEmails"]
         t = 0
         for table in tables:

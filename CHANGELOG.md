@@ -4,11 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 ___
+## 0.9.0
+This version introduced user actions logging.
 
-## Unreleased 0.9.0 Alpha
+## Added:
+- Added a new table to the database to log user actions.
+- Added a method to Db.Db to log user actions.
+
+## Modified:
+- Modified UserCreator and ICG to log the creation of users on the database.
+- Modified main.py to log users loging in and out.
+- Moved the debug activating variables on main.py to the top of the file to make them easier to find.
+- Modified CHANGELOG.md to add a version description on top of some previous versions.
+
 ___
-
 ## 0.8.0
+This version introduced a settings menu, logout capabilities, and the ability to create users beyond the initially required ones.
+
+There were also some code cleaning and performance improvements.
+
 ### Added
 - Added Settings.py, it is a window widget to interact with the software settings.
 - Added UserCreator.py, it is a widget that prompts for information for the creation of new users.
@@ -56,6 +70,8 @@ ___
 
 ___
 ## V0.7.0
+This version introduced user creation and logging-in capabilities.
+
 ### Added
 - Added Login.py, it is a login window widget that starts the program.
 - Added ICG.py, it is an Initial Credentials Generator for the first time the program runs.
